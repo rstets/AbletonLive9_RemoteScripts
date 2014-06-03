@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/ConfigParser.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/ConfigParser.py
 """Configuration file parser.
 
 A setup file consists of sections, lead by a "[section]" header,
@@ -288,6 +288,7 @@ class RawConfigParser():
                 filename = '<???>'
 
         self._read(fp, filename)
+        return
 
     def get(self, section, option):
         opt = self.optionxform(option)
@@ -472,6 +473,7 @@ class RawConfigParser():
 
         if e:
             raise e
+        return
 
 
 class ConfigParser(RawConfigParser):
@@ -567,6 +569,7 @@ class ConfigParser(RawConfigParser):
             return match.group()
         else:
             return '%%(%s)s' % self.optionxform(s)
+        return
 
 
 class SafeConfigParser(ConfigParser):
@@ -610,6 +613,8 @@ class SafeConfigParser(ConfigParser):
                     accum.append(v)
             else:
                 raise InterpolationSyntaxError(option, section, "'%%' must be followed by '%%' or '(', found: %r" % (rest,))
+
+        return
 
     def set(self, section, option, value):
         """Set an option.  Extend ConfigParser.set: check for string values."""

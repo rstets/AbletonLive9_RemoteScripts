@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/InstrumentComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/InstrumentComponent.py
 from itertools import ifilter
 from functools import partial
 from _Framework.CompoundComponent import CompoundComponent
@@ -28,6 +28,7 @@ class InstrumentPresetsComponent(DisplayingModesComponent):
         self.add_mode('scale_m3_horizontal', partial(self._set_scale_mode, False, 2), self._line_names[1][3])
         self.add_mode('scale_m6_vertical', partial(self._set_scale_mode, True, None), self._line_names[1][4])
         self.add_mode('scale_m6_horizontal', partial(self._set_scale_mode, False, None), self._line_names[1][5])
+        return
 
     def _update_data_sources(self, selected):
         if self.is_enabled():
@@ -56,6 +57,7 @@ class InstrumentPresetsComponent(DisplayingModesComponent):
         if buttons:
             buttons.reset()
         self._set_scales_preset_buttons(buttons[:6] if buttons else None)
+        return
 
     def _set_scales_preset_buttons(self, buttons):
         modes = ('scale_p4_vertical', 'scale_p4_horizontal', 'scale_m3_vertical', 'scale_m3_horizontal', 'scale_m6_vertical', 'scale_m6_horizontal')
@@ -73,6 +75,7 @@ class InstrumentPresetsComponent(DisplayingModesComponent):
                 self.set_mode_button(mode, None)
 
         self.update()
+        return
 
 
 CIRCLE_OF_FIFTHS = tuple([ 7 * k % 12 for k in range(12) ])
@@ -107,6 +110,7 @@ class InstrumentScalesComponent(CompoundComponent):
         self._modus_list.scrollable_list.assign_items([ Modus(name=table[i], notes=table[i + 1]) for i in xrange(0, len(consts.MUSICAL_MODES), 2) ])
         self._on_selected_modus.subject = self._modus_list.scrollable_list
         self._update_data_sources()
+        return
 
     presets_layer = forward_property('_presets')('layer')
 
@@ -157,6 +161,7 @@ class InstrumentScalesComponent(CompoundComponent):
     def set_presets_toggle_button(self, button):
         raise button is None or button.is_momentary() or AssertionError
         self._presets_enabler.set_toggle_button(button)
+        return
 
     def set_top_buttons(self, buttons):
         if buttons:
@@ -172,6 +177,7 @@ class InstrumentScalesComponent(CompoundComponent):
             self.set_key_center_buttons(self._top_key_center_buttons + self._bottom_key_center_buttons)
         else:
             self.set_key_center_buttons(tuple())
+        return
 
     def set_bottom_buttons(self, buttons):
         if buttons:
@@ -187,15 +193,16 @@ class InstrumentScalesComponent(CompoundComponent):
             self.set_key_center_buttons(self._top_key_center_buttons + self._bottom_key_center_buttons)
         else:
             self.set_key_center_buttons([])
+        return
 
     def set_modus_down_button(self, button):
-        self._modus_list.set_select_next_button(button)
+        self._modus_list.select_next_button.set_control_element(button)
 
     def set_modus_up_button(self, button):
-        self._modus_list.set_select_prev_button(button)
+        self._modus_list.select_prev_button.set_control_element(button)
 
     def set_encoder_controls(self, encoders):
-        self._modus_list.set_encoder_controls([encoders[0]] if encoders else [])
+        self._modus_list.encoders.set_control_element([encoders[0]] if encoders else [])
 
     def set_key_center_buttons(self, buttons):
         if not (not buttons or len(buttons) == 12):
@@ -252,6 +259,7 @@ class InstrumentScalesComponent(CompoundComponent):
         self.notify_scales_changed()
 
     def update(self):
+        super(InstrumentScalesComponent, self).update()
         if self.is_enabled():
             self._update_key_center_buttons()
             self._update_absolute_relative_button()
@@ -268,11 +276,13 @@ class InstrumentScalesComponent(CompoundComponent):
         if self.is_enabled() and self._absolute_relative_button != None:
             self._absolute_relative_button.set_on_off_values('Scales.FixedOn', 'Scales.FixedOff')
             self._absolute_relative_button.set_light(self.is_absolute)
+        return
 
     def _update_diatonic_chromatic_button(self):
         if self.is_enabled() and self._diatonic_chromatic_button != None:
             self._diatonic_chromatic_button.set_on_off_values('Scales.Diatonic', 'Scales.Chromatic')
             self._diatonic_chromatic_button.set_light(self.is_diatonic)
+        return
 
     def _update_data_sources(self):
         key_index = list(KEY_CENTERS).index(self.key_center)
@@ -296,10 +306,6 @@ class InstrumentComponent(CompoundComponent, Slideable, Messenger):
     def __init__(self, *a, **k):
         super(InstrumentComponent, self).__init__(*a, **k)
         self._scales = self.register_component(InstrumentScalesComponent())
-        self._scales_menu = self.register_component(EnablingModesComponent(component=self._scales, toggle_value='DefaultButton.On'))
-        self._slider = self.register_component(SlideComponent(self))
-        self._on_scales_changed.subject = self._scales
-        self._on_scales_mode_changed.subject = self._scales._presets
         self._matrix = None
         self._delete_button = None
         self._first_note = self.page_length * 3 + self.page_offset
@@ -311,7 +317,12 @@ class InstrumentComponent(CompoundComponent, Slideable, Messenger):
         self._has_notes_pattern = self._get_pattern(0)
         self._takeover_pads = False
         self._aftertouch_control = None
+        self._scales_menu = self.register_component(EnablingModesComponent(component=self._scales, toggle_value='DefaultButton.On'))
+        self._slider = self.register_component(SlideComponent(self))
+        self._on_scales_changed.subject = self._scales
+        self._on_scales_mode_changed.subject = self._scales._presets
         self._update_pattern()
+        return
 
     def set_detail_clip(self, clip):
         if clip != self._detail_clip:
@@ -442,6 +453,7 @@ class InstrumentComponent(CompoundComponent, Slideable, Messenger):
     def set_scales_toggle_button(self, button):
         raise button is None or button.is_momentary() or AssertionError
         self._scales_menu.set_toggle_button(button)
+        return
 
     def set_presets_toggle_button(self, button):
         self._scales.set_presets_toggle_button(button)
@@ -491,6 +503,7 @@ class InstrumentComponent(CompoundComponent, Slideable, Messenger):
         self.notify_contents()
 
     def update(self):
+        super(InstrumentComponent, self).update()
         if self.is_enabled():
             self._update_matrix()
             self._update_aftertouch()
@@ -522,6 +535,8 @@ class InstrumentComponent(CompoundComponent, Slideable, Messenger):
                     button.set_light('Instrument.' + note_info.color)
                     button.set_enabled(True)
 
+        return
+
     def _get_pattern(self, first_note = None):
         if first_note is None:
             first_note = int(round(self._first_note))
@@ -551,6 +566,7 @@ class InstrumentComponent(CompoundComponent, Slideable, Messenger):
     def _update_aftertouch(self):
         if self.is_enabled() and self._aftertouch_control != None:
             self._aftertouch_control.send_value(Sysex.MONO_AFTERTOUCH)
+        return
 
     def _set_control_pads_from_script(self, takeover_pads):
         """

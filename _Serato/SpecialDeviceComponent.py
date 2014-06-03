@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialDeviceComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialDeviceComponent.py
 import Live
 import libInterprocessCommsAPIPython
 from PySCAClipControl import *
@@ -10,6 +10,7 @@ class SpecialDeviceComponent(DeviceComponent):
         DeviceComponent.__init__(self)
         self._serato_interface = None
         self._parameter_listeners = []
+        return
 
     def disconnect(self):
         self._remove_parameter_listeners()
@@ -17,6 +18,7 @@ class SpecialDeviceComponent(DeviceComponent):
         DeviceComponent.disconnect(self)
         self._serato_interface = None
         self._parameter_listeners = None
+        return
 
     def set_device(self, device):
         if not self._locked_to_device and device != self._device:
@@ -35,6 +37,7 @@ class SpecialDeviceComponent(DeviceComponent):
             parameter = self._parameter_controls[parameter_index].mapped_parameter()
             adapted_value = parameter != None and parameter.is_enabled and value * abs(parameter.max - parameter.min)
             parameter.value = adapted_value + parameter.min
+        return
 
     def update(self):
         if self.is_enabled() and self._device != None:
@@ -48,6 +51,7 @@ class SpecialDeviceComponent(DeviceComponent):
                 control.release_parameter()
 
         self._on_on_off_changed()
+        return
 
     def _on_parameter_name_changed(self, index):
         if not self._parameter_controls != None:
@@ -58,6 +62,7 @@ class SpecialDeviceComponent(DeviceComponent):
                 name = ''
                 name = parameter != None and parameter.name
             self._serato_interface.PySCA_SetDeviceParamLabel(index + 1, name)
+        return
 
     def _on_device_name_changed(self):
         if self._serato_interface != None:
@@ -65,6 +70,7 @@ class SpecialDeviceComponent(DeviceComponent):
             if self._device != None:
                 name = self._device.name
             self._serato_interface.PySCA_SetDeviceLabel(name)
+        return
 
     def _on_parameter_changed(self, index):
         if not self._parameter_controls != None:
@@ -75,6 +81,7 @@ class SpecialDeviceComponent(DeviceComponent):
                 value_to_send = 0
                 value_to_send = parameter != None and (parameter.value - parameter.min) / (parameter.max - parameter.min)
             self._serato_interface.PySCA_SetDeviceParamValue(index + 1, value_to_send)
+        return
 
     def _on_on_off_changed(self):
         if self.is_enabled() and self._serato_interface != None:
@@ -84,6 +91,7 @@ class SpecialDeviceComponent(DeviceComponent):
                 if parameter != None and parameter.value > 0.0:
                     state = 1
             self._serato_interface.PySCA_SetDeviceActive(state)
+        return
 
     def _add_parameter_listeners(self):
         if self._parameter_controls != None:
@@ -97,6 +105,8 @@ class SpecialDeviceComponent(DeviceComponent):
                         self._parameter_listeners.append((parameter, value_listener))
                 value_listener()
                 name_listener()
+
+        return
 
     def _remove_parameter_listeners(self):
         if self._parameter_controls != None:
@@ -112,3 +122,4 @@ class SpecialDeviceComponent(DeviceComponent):
                     self._serato_interface.PySCA_SetDeviceParamLabel(index + 1, '')
 
             self._parameter_listeners = []
+        return

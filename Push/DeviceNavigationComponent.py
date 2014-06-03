@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/DeviceNavigationComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/DeviceNavigationComponent.py
 from __future__ import with_statement
 from functools import partial
 from contextlib import contextmanager
@@ -35,6 +35,7 @@ class DeviceNavigationComponent(CompoundComponent):
         self._on_selected_track_changed.subject = self.song().view
         with inject(selection=const(NamedTuple(selected_device=None))).everywhere():
             self._on_selected_track_changed()
+        return
 
     @property
     def current_node(self):
@@ -104,6 +105,7 @@ class DeviceNavigationComponent(CompoundComponent):
                 target = selected_device.canonical_parent
                 node = (not self._current_node or self._current_node.object != target) and self._make_navigation_node(target, is_entering=False)
                 self._set_current_node(node)
+        return
 
     def _set_current_node(self, node):
         if node is None:
@@ -119,6 +121,7 @@ class DeviceNavigationComponent(CompoundComponent):
             self._on_state_changed_in_node(index, value)
 
         node.preselect()
+        return
 
     @depends(selection=lambda : NamedTuple(selected_device=None))
     def _update_info(self, selection = None):
@@ -126,8 +129,10 @@ class DeviceNavigationComponent(CompoundComponent):
             self._message_box.set_enabled(True)
         else:
             self._message_box.set_enabled(False)
+        return
 
     def update(self):
+        super(DeviceNavigationComponent, self).update()
         if self.is_enabled():
             self._update_enter_button()
             self._update_exit_button()
@@ -139,6 +144,7 @@ class DeviceNavigationComponent(CompoundComponent):
         self._on_state_changed_in_controller.subject = None
         yield
         self._on_state_changed_in_controller.subject = old_subject
+        return
 
     @subject_slot('state')
     def _on_state_changed_in_node(self, index, value):
@@ -176,6 +182,7 @@ class DeviceNavigationComponent(CompoundComponent):
             if self._current_node.state[index] != value:
                 with self._deactivated_option_listener():
                     self._device_list.set_option_state(index, self._current_node.state[index])
+        return
 
     @subject_slot('change_option')
     def _on_selection_changed_in_controller(self, value):
@@ -222,6 +229,8 @@ class DeviceNavigationComponent(CompoundComponent):
                 browser.hotswap_target = self.selected_object
         except RuntimeError:
             pass
+
+        return
 
     def _make_enter_node(self):
         if self._device_list.selected_option >= 0:

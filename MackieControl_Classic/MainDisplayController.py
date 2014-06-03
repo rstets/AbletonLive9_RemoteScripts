@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl_Classic/MainDisplayController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl_Classic/MainDisplayController.py
 from MackieControlComponent import *
 
 class MainDisplayController(MackieControlComponent):
@@ -77,6 +77,8 @@ class MainDisplayController(MackieControlComponent):
         for d in self.__displays:
             self.__parameters = parameters
 
+        return
+
     def channel_strip_strings(self):
         return self.__channel_strip_strings
 
@@ -84,6 +86,7 @@ class MainDisplayController(MackieControlComponent):
         if channel_strip_strings:
             self.set_parameters(None)
         self.__channel_strip_strings = channel_strip_strings
+        return
 
     def set_show_return_track_names(self, show_returns):
         self.__show_return_tracks = show_returns

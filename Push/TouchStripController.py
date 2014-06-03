@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/TouchStripController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/TouchStripController.py
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from TouchStripElement import TouchStripModes, SimpleBehaviour
 from TouchEncoderElement import TouchEncoderObserver
@@ -10,13 +10,11 @@ class TouchStripControllerComponent(ControlSurfaceComponent):
         super(TouchStripControllerComponent, self).__init__(*a, **k)
         self._touch_strip = None
         self._parameter = None
+        return
 
     def set_parameter(self, parameter):
         self._parameter = parameter
         self._update_strip_state()
-
-    def update(self):
-        pass
 
     def set_touch_strip(self, touch_strip):
         self._touch_strip = touch_strip
@@ -29,6 +27,7 @@ class TouchStripControllerComponent(ControlSurfaceComponent):
                 self._touch_strip.connect_to(self._parameter)
             else:
                 self._touch_strip.release_parameter()
+        return
 
     def _calculate_strip_mode(self):
         if self._parameter.min == -1 * self._parameter.max:
@@ -45,10 +44,12 @@ class TouchStripEncoderConnection(ControlSurfaceComponent, TouchEncoderObserver)
         self._strip_controller = strip_controller
         self._touch_button = touch_button
         self._encoder = None
+        return
 
     def disconnect(self):
         self._set_touched_encoder(None)
         super(TouchStripEncoderConnection, self).disconnect()
+        return
 
     def on_encoder_touch(self, encoder):
         self._on_encoder_change(encoder)
@@ -56,12 +57,10 @@ class TouchStripEncoderConnection(ControlSurfaceComponent, TouchEncoderObserver)
     def on_encoder_parameter(self, encoder):
         self._on_encoder_change(encoder)
 
-    def update(self):
-        pass
-
     def _on_encoder_change(self, encoder):
         if consts.PROTO_TOUCH_ENCODER_TO_STRIP and self._encoder in (encoder, None):
             self._set_touched_encoder(encoder if self._can_use_touch_encoder(encoder) else None)
+        return
 
     def _can_use_touch_encoder(self, encoder):
         is_useable = encoder.is_pressed() and encoder.mapped_parameter() != None
@@ -74,3 +73,4 @@ class TouchStripEncoderConnection(ControlSurfaceComponent, TouchEncoderObserver)
         parameter = encoder.mapped_parameter() if encoder != None else None
         self._strip_controller.set_parameter(parameter)
         self._strip_controller.set_enabled(parameter != None)
+        return

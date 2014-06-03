@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/BrowserComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/BrowserComponent.py
 from __future__ import with_statement
 from functools import partial
 from itertools import izip, chain, imap
@@ -8,6 +8,7 @@ import consts
 import Live
 FilterType = Live.Browser.FilterType
 DeviceType = Live.Device.DeviceType
+from _Framework.Control import ButtonControl
 from _Framework import Task
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.Util import first, find_if, index_if, clamp, in_range, BooleanContext, nop, const, lazy_attribute, memoize
@@ -131,7 +132,7 @@ class BrowserModel(Subject, SlotManager):
 class EmptyBrowserModel(BrowserModel):
     """
     A browser model that never returns anything, to be used for
-    hotswap targets that do not make sense in the L9C.
+    hotswap targets that do not make sense in Push.
     """
     empty_list_messages = ['Nothing to browse']
 
@@ -213,6 +214,7 @@ class FullBrowserModel(BrowserModel):
 
         if last_seleced_list_index != None:
             self.notify_selection_updated(last_seleced_list_index)
+        return
 
     def _push_content_list(self):
         if self._num_contents < len(self._contents):
@@ -273,6 +275,7 @@ class FullBrowserModel(BrowserModel):
             self._finalize_content_lists_change()
             if old_num_contents != self._num_contents:
                 self.notify_content_lists()
+        return
 
 
 class BrowserQuery(object):
@@ -358,7 +361,7 @@ class SourceBrowserQuery(TagBrowserQuery):
         for item in root:
             groups.setdefault(item.source, []).append(item)
 
-        return map(lambda (k, g): VirtualBrowserItem(name=k, children_query=const(g)), sorted(groups.items(), key=first))
+        return map(lambda (k, g): VirtualBrowserItem(name=k if k is not None else '', children_query=const(g)), sorted(groups.items(), key=first))
 
 
 class PlacesBrowserQuery(BrowserQuery):
@@ -543,6 +546,9 @@ class BrowserComponent(CompoundComponent):
     __subject_events__ = ('load_item',)
     NUM_COLUMNS = 4
     COLUMN_SIZE = 4
+    enter_button = ButtonControl(**consts.SIDE_BUTTON_COLORS)
+    exit_button = ButtonControl(**consts.SIDE_BUTTON_COLORS)
+    shift_button = ButtonControl()
 
     def __init__(self, browser = None, *a, **k):
         super(BrowserComponent, self).__init__(*a, **k)
@@ -561,9 +567,6 @@ class BrowserComponent(CompoundComponent):
         self._select_buttons = []
         self._state_buttons = []
         self._encoder_controls = []
-        self._enter_button = None
-        self._exit_button = None
-        self._shift_button = None
         self._on_list_item_action.replace_subjects(self._list_components)
         self._on_hotswap_target_changed.subject = self._browser
         self._on_filter_type_changed.subject = self._browser
@@ -575,6 +578,7 @@ class BrowserComponent(CompoundComponent):
         self._skip_next_preselection = False
         self._browser_model_dirty = True
         self._on_content_lists_changed()
+        return
 
     def set_display_line1(self, display):
         self.set_display_line_with_index(display, 0)
@@ -587,16 +591,6 @@ class BrowserComponent(CompoundComponent):
 
     def set_display_line4(self, display):
         self.set_display_line_with_index(display, 3)
-
-    def set_enter_button(self, button):
-        self._enter_button = button
-        self._on_enter_value.subject = button
-        self._update_navigation_button_state()
-
-    def set_exit_button(self, button):
-        self._exit_button = button
-        self._on_exit_value.subject = button
-        self._update_navigation_button_state()
 
     def set_display_line_with_index(self, display, index):
         if display:
@@ -615,12 +609,14 @@ class BrowserComponent(CompoundComponent):
             self._set_button_if_enabled(component, 'action_button', button)
 
         for component, button in izip(self._list_components, buttons[::2]):
-            if self._shift_button and self._shift_button.is_pressed():
+            if self.shift_button.is_pressed:
                 self._set_button_if_enabled(component, 'prev_page_button', button)
                 self._set_button_if_enabled(component, 'select_prev_button', None)
             else:
                 self._set_button_if_enabled(component, 'prev_page_button', None)
                 self._set_button_if_enabled(component, 'select_prev_button', button)
+
+        return
 
     def set_state_buttons(self, buttons):
         for button in buttons or []:
@@ -631,7 +627,7 @@ class BrowserComponent(CompoundComponent):
         self._state_buttons = buttons
         buttons = buttons or (None, None, None, None, None, None, None, None)
         for component, button in izip(self._list_components, buttons[::2]):
-            if self._shift_button and self._shift_button.is_pressed():
+            if self.shift_button.is_pressed:
                 self._set_button_if_enabled(component, 'next_page_button', button)
                 self._set_button_if_enabled(component, 'select_next_button', None)
             else:
@@ -642,23 +638,22 @@ class BrowserComponent(CompoundComponent):
             if button and self.is_enabled():
                 button.set_light('DefaultButton.Disabled')
 
-    def set_shift_button(self, button):
-        self._shift_button = button
-        self._on_shift_button.subject = button
+        return
 
-    @subject_slot('value')
-    def _on_shift_button(self, value):
+    @shift_button.value
+    def shift_button(self, value, control):
         self.set_select_buttons(self._select_buttons)
         self.set_state_buttons(self._state_buttons)
 
     def _set_button_if_enabled(self, component, name, button):
-        setter = getattr(component, 'set_' + name)
+        control = getattr(component, name)
         if component.is_enabled(explicit=True):
-            setter(button)
+            control.set_control_element(button)
         else:
-            setter(None)
+            control.set_control_element(None)
             if button and self.is_enabled():
                 button.set_light('DefaultButton.Disabled')
+        return
 
     def set_encoder_controls(self, encoder_controls):
         if encoder_controls:
@@ -666,25 +661,26 @@ class BrowserComponent(CompoundComponent):
             num_assignable_lists = min(num_active_lists, len(encoder_controls) / 2)
             index = 0
             for component in self._list_components[:num_assignable_lists - 1]:
-                component.set_encoder_controls(encoder_controls[index:index + 2])
+                component.encoders.set_control_element(encoder_controls[index:index + 2])
                 index += 2
 
-            self._list_components[num_assignable_lists - 1].set_encoder_controls(encoder_controls[index:])
+            self._list_components[num_assignable_lists - 1].encoders.set_control_element(encoder_controls[index:])
         else:
             for component in self._list_components:
-                component.set_encoder_controls([])
+                component.encoders.set_control_element([])
 
         self._encoder_controls = encoder_controls
 
     def update(self):
+        super(BrowserComponent, self).update()
         if self.is_enabled():
             self.set_state_buttons(self._state_buttons)
             self.set_select_buttons(self._select_buttons)
             self._update_browser_model()
-            self._update_navigation_button_state()
 
     def reset_load_memory(self):
         self._update_load_memory(None)
+        return
 
     def _do_load_item(self, item):
         self.do_load_item(item)
@@ -716,10 +712,8 @@ class BrowserComponent(CompoundComponent):
             scrollable_list.request_notify_item_activated()
 
     def _update_navigation_button_state(self):
-        if self._exit_button:
-            self._exit_button.set_light(self._scroll_offset > 0)
-        if self._enter_button:
-            self._enter_button.set_light(self._scroll_offset < self._max_scroll_offset)
+        self.exit_button.enabled = self._scroll_offset > 0
+        self.enter_button.enabled = self._scroll_offset < self._max_scroll_offset
 
     def _shorten_item_name(self, shortening_limit, list_index, item_name):
         """
@@ -762,15 +756,13 @@ class BrowserComponent(CompoundComponent):
                 display_string = prefix + display_string
         return display_string[:shortening_limit + 1]
 
-    @subject_slot('value')
-    def _on_enter_value(self, value):
-        if value:
-            self._set_scroll_offset(min(self._max_scroll_offset, self._scroll_offset + 1))
+    @enter_button.pressed
+    def enter_button(self, control):
+        self._set_scroll_offset(min(self._max_scroll_offset, self._scroll_offset + 1))
 
-    @subject_slot('value')
-    def _on_exit_value(self, value):
-        if value:
-            self._set_scroll_offset(max(0, self._scroll_offset - 1))
+    @exit_button.pressed
+    def exit_button(self, control):
+        self._set_scroll_offset(max(0, self._scroll_offset - 1))
 
     @subject_slot('hotswap_target')
     def _on_hotswap_target_changed(self):
@@ -872,6 +864,7 @@ class BrowserComponent(CompoundComponent):
         self.set_state_buttons(self._state_buttons)
         self.set_encoder_controls(self._encoder_controls)
         self._update_navigation_button_state()
+        return
 
     @subject_slot('value')
     def _on_select_matrix_value(self, value, *_):

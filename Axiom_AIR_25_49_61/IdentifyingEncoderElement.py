@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/IdentifyingEncoderElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/IdentifyingEncoderElement.py
 from _Framework.EncoderElement import EncoderElement
 from _Framework.InputControlElement import *
 
@@ -30,6 +30,7 @@ class IdentifyingEncoderElement(EncoderElement):
         InputControlElement.install_connections(self, translate_message, install_mapping, install_forwarding)
         self._parameter_to_map_to = current_parameter
         self._update_led()
+        return
 
     def set_on_off_values(self, on_value, off_value):
         self.clear_send_cache()
@@ -63,6 +64,7 @@ class IdentifyingEncoderElement(EncoderElement):
                     is_input = True
                     self._report_value(value, not is_input)
         self._force_next_value = False
+        return
 
     def connect_to(self, parameter):
         if parameter != self._parameter_to_map_to and not self.is_mapped_manually():
@@ -83,3 +85,4 @@ class IdentifyingEncoderElement(EncoderElement):
             self.send_value(self._on_value, force=True)
         else:
             self.send_value(self._off_value, force=True)
+        return

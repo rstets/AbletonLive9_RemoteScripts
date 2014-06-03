@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/KeyPad/CombinedButtonsElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/KeyPad/CombinedButtonsElement.py
 from __future__ import with_statement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from _Framework.ButtonElement import OFF_VALUE

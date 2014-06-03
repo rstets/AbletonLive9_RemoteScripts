@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchpad/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchpad/SpecialMixerComponent.py
 import Live
 from _Framework.MixerComponent import MixerComponent
 from DefChannelStripComponent import DefChannelStripComponent
@@ -12,6 +12,7 @@ class SpecialMixerComponent(MixerComponent):
         self._unarm_all_button = None
         self._unsolo_all_button = None
         self._unmute_all_button = None
+        return
 
     def disconnect(self):
         if self._unarm_all_button != None:
@@ -24,6 +25,7 @@ class SpecialMixerComponent(MixerComponent):
             self._unmute_all_button.remove_value_listener(self._unmute_all_value)
             self._unmute_all_button = None
         MixerComponent.disconnect(self)
+        return
 
     def set_global_buttons(self, unarm_all, unsolo_all, unmute_all):
         if not isinstance(unarm_all, (ButtonElement, type(None))):
@@ -47,6 +49,7 @@ class SpecialMixerComponent(MixerComponent):
             self._unmute_all_button = unmute_all
             self._unmute_all_button != None and self._unmute_all_button.add_value_listener(self._unmute_all_value)
             self._unmute_all_button.turn_off()
+        return
 
     def _create_strip(self):
         return DefChannelStripComponent()
@@ -60,6 +63,8 @@ class SpecialMixerComponent(MixerComponent):
                 if track.can_be_armed and track.arm:
                     track.arm = False
 
+        return
+
     def _unsolo_all_value(self, value):
         raise self.is_enabled() or AssertionError
         raise self._unsolo_all_button != None or AssertionError
@@ -69,6 +74,8 @@ class SpecialMixerComponent(MixerComponent):
                 if track.solo:
                     track.solo = False
 
+        return
+
     def _unmute_all_value(self, value):
         raise self.is_enabled() or AssertionError
         raise self._unmute_all_button != None or AssertionError
@@ -77,3 +84,5 @@ class SpecialMixerComponent(MixerComponent):
             for track in tuple(self.song().tracks) + tuple(self.song().return_tracks):
                 if track.mute:
                     track.mute = False
+
+        return

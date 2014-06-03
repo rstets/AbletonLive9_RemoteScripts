@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/consts.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/consts.py
 from _Framework.Resource import PrioritizedResource
 import sys
 DISPLAY_LENGTH = 72
@@ -7,6 +7,7 @@ SCROLL_SIDE_BUTTON_STATES = {'Pressed': 'DefaultButton.On',
  'Enabled': 'DefaultButton.Off',
  True: 'DefaultButton.On',
  False: 'DefaultButton.Disabled'}
+SIDE_BUTTON_COLORS = dict(color='DefaultButton.Off', pressed_color='DefaultButton.On', disabled_color='DefaultButton.Disabled')
 MUSICAL_MODES = ['Major',
  [0,
   2,

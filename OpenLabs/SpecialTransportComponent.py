@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/OpenLabs/SpecialTransportComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/OpenLabs/SpecialTransportComponent.py
 import Live
 from _Framework.TransportComponent import TransportComponent
 from _Framework.InputControlElement import *
@@ -13,6 +13,7 @@ class SpecialTransportComponent(TransportComponent):
         self._undo_button = None
         self._redo_button = None
         self._bts_button = None
+        return
 
     def disconnect(self):
         TransportComponent.disconnect(self)
@@ -25,6 +26,7 @@ class SpecialTransportComponent(TransportComponent):
         if self._bts_button != None:
             self._bts_button.remove_value_listener(self._bts_value)
             self._bts_button = None
+        return
 
     def set_undo_button(self, undo_button):
         if not isinstance(undo_button, (ButtonElement, type(None))):
@@ -35,6 +37,7 @@ class SpecialTransportComponent(TransportComponent):
                 self._undo_button = undo_button
                 self._undo_button != None and self._undo_button.add_value_listener(self._undo_value)
             self.update()
+        return
 
     def set_redo_button(self, redo_button):
         if not isinstance(redo_button, (ButtonElement, type(None))):
@@ -45,6 +48,7 @@ class SpecialTransportComponent(TransportComponent):
                 self._redo_button = redo_button
                 self._redo_button != None and self._redo_button.add_value_listener(self._redo_value)
             self.update()
+        return
 
     def set_bts_button(self, bts_button):
         if not isinstance(bts_button, (ButtonElement, type(None))):
@@ -55,6 +59,7 @@ class SpecialTransportComponent(TransportComponent):
                 self._bts_button = bts_button
                 self._bts_button != None and self._bts_button.add_value_listener(self._bts_value)
             self.update()
+        return
 
     def _undo_value(self, value):
         if not self._undo_button != None:
@@ -63,6 +68,7 @@ class SpecialTransportComponent(TransportComponent):
                 raise AssertionError
                 if self.is_enabled():
                     (value != 0 or not self._undo_button.is_momentary()) and self.song().can_undo and self.song().undo()
+        return
 
     def _redo_value(self, value):
         if not self._redo_button != None:
@@ -71,6 +77,7 @@ class SpecialTransportComponent(TransportComponent):
                 raise AssertionError
                 if self.is_enabled():
                     (value != 0 or not self._redo_button.is_momentary()) and self.song().can_redo and self.song().redo()
+        return
 
     def _bts_value(self, value):
         if not self._bts_button != None:
@@ -78,3 +85,4 @@ class SpecialTransportComponent(TransportComponent):
             if not value in range(128):
                 raise AssertionError
                 self.song().current_song_time = self.is_enabled() and (value != 0 or not self._bts_button.is_momentary()) and 0.0
+        return

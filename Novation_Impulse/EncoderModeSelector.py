@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Novation_Impulse/EncoderModeSelector.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Novation_Impulse/EncoderModeSelector.py
 import Live
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 
@@ -20,6 +20,7 @@ class EncoderModeSelector(ModeSelectorComponent):
         self._bank_down_button.add_value_listener(self._bank_down_value)
         self._bank_up_button.add_value_listener(self._bank_up_value)
         self.update()
+        return
 
     def disconnect(self):
         self._bank_down_button.remove_value_listener(self._bank_down_value)
@@ -31,6 +32,7 @@ class EncoderModeSelector(ModeSelectorComponent):
         self._bank_up_button = None
         self._bank_down_button = None
         self._encoders = None
+        return
 
     def set_device_mixer_buttons(self, device_button, mixer_button):
         if self._device_button != None:
@@ -43,6 +45,7 @@ class EncoderModeSelector(ModeSelectorComponent):
             raise self._device_button != None and (self._mixer_button != None or AssertionError)
             self._device_button.add_value_listener(self._device_value)
             self._mixer_button.add_value_listener(self._mixer_value)
+        return
 
     def set_provide_volume_mode(self, provide_volume_mode):
         self._number_of_modes = 6 if provide_volume_mode else 5
@@ -51,6 +54,7 @@ class EncoderModeSelector(ModeSelectorComponent):
         return self._number_of_modes
 
     def update(self):
+        super(EncoderModeSelector, self).update()
         if not self._mode_index in range(self.number_of_modes()):
             raise AssertionError
             if self.is_enabled():
@@ -84,6 +88,7 @@ class EncoderModeSelector(ModeSelectorComponent):
 
             self._device.set_allow_update(True)
             self._mixer.set_allow_update(True)
+        return
 
     def _bank_down_value(self, value):
         if not value in range(128):

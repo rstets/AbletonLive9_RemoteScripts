@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/RemoteSL_Classic/EffectController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/RemoteSL_Classic/EffectController.py
 import Live
 from RemoteSLComponent import RemoteSLComponent
 from consts import *
@@ -28,9 +28,11 @@ class EffectController(RemoteSLComponent):
         self.__show_bank = False
         self.__strips = [ EffectChannelStrip(self) for x in range(NUM_CONTROLS_PER_ROW) ]
         self.__reassign_strips()
+        return
 
     def disconnect(self):
         self.__change_assigned_device(None)
+        return
 
     def receive_midi_cc(self, cc_no, cc_value):
         if cc_no in fx_display_button_ccs:
@@ -137,6 +139,8 @@ class EffectController(RemoteSLComponent):
             for cc_no in fx_upper_button_row_ccs:
                 self.send_midi((self.cc_status_byte(), cc_no, CC_VAL_BUTTON_RELEASED))
 
+        return
+
     def __handle_page_up_down_ccs(self, cc_no, cc_value):
         new_bank = self.__assigned_device != None and self.__bank
         if cc_value == CC_VAL_BUTTON_PRESSED:
@@ -154,6 +158,7 @@ class EffectController(RemoteSLComponent):
                         self.__reassign_strips()
                     else:
                         self.__assigned_device.store_chosen_bank(self.__parent.instance_identifier(), new_bank)
+        return
 
     def __handle_select_button_ccs(self, cc_no, cc_value):
         if cc_no == FX_SELECT_FIRST_BUTTON_ROW:
@@ -226,6 +231,7 @@ class EffectController(RemoteSLComponent):
             self.__assigned_device = device
             if not self.__assigned_device == None:
                 self.__assigned_device.add_parameters_listener(self.__parameter_list_of_device_changed)
+        return
 
     def __parameter_list_of_device_changed(self):
         self.__reassign_strips()
@@ -246,6 +252,7 @@ class EffectChannelStrip():
     def __init__(self, mixer_controller_parent):
         self.__mixer_controller = mixer_controller_parent
         self.__assigned_parameter = None
+        return
 
     def assigned_parameter(self):
         return self.__assigned_parameter
@@ -265,3 +272,4 @@ class EffectChannelStrip():
 
     def on_encoder_moved(self, cc_value):
         raise self.__assigned_parameter == None or AssertionError, 'should only be reached when the encoder was not realtime mapped '
+        return

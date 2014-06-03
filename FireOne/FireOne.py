@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/FireOne/FireOne.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/FireOne/FireOne.py
 import Live
 import MidiRemoteScript
 NOTE_OFF_STATUS = 128
@@ -272,3 +272,4 @@ class FireOne:
                     track.arm = track.can_be_armed and not track.arm
             else:
                 track.mute = not track.mute
+        return

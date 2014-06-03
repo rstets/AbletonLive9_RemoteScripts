@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NoteEditorComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NoteEditorComponent.py
 from __future__ import with_statement
 from functools import partial
 from itertools import chain, imap, ifilter
@@ -148,6 +148,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
         self._triplet_factor = 1.0
         self._update_from_grid()
         self.background_color = 'NoteEditor.StepEmpty'
+        return
 
     note_settings_layer = forward_property('_settings')('layer')
 
@@ -228,6 +229,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
             self._update_editor_matrix()
 
     def update(self):
+        super(NoteEditorComponent, self).update()
         self._update_editor_matrix_leds()
         self._grid_resolution.update()
 
@@ -250,6 +252,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
             self._clip_notes = []
         self._update_editor_matrix()
         self.notify_notes_changed()
+        return
 
     def _update_editor_matrix(self):
         """
@@ -356,6 +359,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
                     else:
                         self._on_release_step((x, y))
                     self._update_editor_matrix()
+        return
 
     @subject_slot('value')
     def _on_any_touch_value(self, value, x, y, is_momentary):
@@ -390,12 +394,14 @@ class NoteEditorComponent(CompoundComponent, Subject):
             self._step_tap_tasks[step].restart()
             self._pressed_steps.append(step)
         self.notify_active_steps()
+        return
 
     def _time_step(self, time):
         if self.loop_steps and self._sequencer_clip != None and self._sequencer_clip.looping:
             return LoopingTimeStep(time, self._get_step_length(), self._sequencer_clip.loop_start, self._sequencer_clip.loop_end)
         else:
             return TimeStep(time, self._get_step_length())
+        return
 
     def _add_note_in_step(self, step, modify_existing = True):
         """
@@ -480,6 +486,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
                 self._modify_task.restart()
         if needs_update:
             self._update_editor_matrix()
+        return
 
     def _reset_modifications(self):
         self._velocity_offset = 0
@@ -584,6 +591,7 @@ class NoteEditorComponent(CompoundComponent, Subject):
                 min_max_values = self._min_max_for_notes(self._time_step(start_time).filter_notes(self._clip_notes), start_time, min_max_values)
 
             return min_max_values
+        return
 
     def _is_triplet_quantization(self):
         return self._triplet_factor == 0.75

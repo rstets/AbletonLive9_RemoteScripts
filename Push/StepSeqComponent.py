@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/StepSeqComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/StepSeqComponent.py
 from __future__ import with_statement
 import Live
 from itertools import imap, chain, starmap
@@ -48,6 +48,7 @@ class DrumGroupFinderComponent(ControlSurfaceComponent, Subject):
         self.update()
 
     def update(self):
+        super(DrumGroupFinderComponent, self).update()
         if self.is_enabled():
             self._update_listeners()
             self._update_drum_group()
@@ -88,6 +89,7 @@ def find_drum_group_device(track_or_chain):
             return instrument
         elif instrument.can_have_chains:
             return find_if(bool, imap(find_drum_group_device, instrument.chains))
+    return None
 
 
 class StepSeqComponent(CompoundComponent):
@@ -123,6 +125,7 @@ class StepSeqComponent(CompoundComponent):
          (68, 74))))))
         self._skin = skin
         self._playhead_color = 'NoteEditor.Playhead'
+        return
 
     def set_playhead(self, playhead):
         self._playhead = playhead
@@ -150,6 +153,7 @@ class StepSeqComponent(CompoundComponent):
         self._drum_group.set_drum_group_device(drum_group_device)
         self._on_selected_drum_pad_changed.subject = drum_group_device.view if drum_group_device else None
         self._on_selected_drum_pad_changed()
+        return
 
     def set_touch_strip(self, touch_strip):
         self._drum_group.set_page_strip(touch_strip)
@@ -184,6 +188,12 @@ class StepSeqComponent(CompoundComponent):
     def set_delete_button(self, button):
         self._delete_button = button
         self._drum_group.set_delete_button(button)
+
+    def set_next_loop_page_button(self, button):
+        self._loop_selector.next_page_button.set_control_element(button)
+
+    def set_prev_loop_page_button(self, button):
+        self._loop_selector.prev_page_button.set_control_element(button)
 
     def set_loop_selector_matrix(self, matrix):
         self._loop_selector.set_loop_selector_matrix(matrix)
@@ -231,6 +241,7 @@ class StepSeqComponent(CompoundComponent):
         pass
 
     def update(self):
+        super(StepSeqComponent, self).update()
         self._on_detail_clip_changed()
         self._update_playhead_color()
 
@@ -243,6 +254,7 @@ class StepSeqComponent(CompoundComponent):
         self._loop_selector.set_detail_clip(clip)
         self._big_loop_selector.set_detail_clip(clip)
         self._playhead_component.set_clip(self._detail_clip)
+        return
 
     @subject_slot('value')
     def _on_shift_value(self, value):
@@ -272,3 +284,4 @@ class StepSeqComponent(CompoundComponent):
             self._big_loop_selector.set_loop_selector_matrix(None)
             self._note_editor.set_enabled(True)
             self._note_editor.set_button_matrix(self._note_editor_matrix)
+        return

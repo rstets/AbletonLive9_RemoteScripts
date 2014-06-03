@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NoteSettingsComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NoteSettingsComponent.py
 import math
 from functools import partial
 from itertools import imap
@@ -24,6 +24,7 @@ class NoteSetting(SlotManager, Subject):
         self.value_source = DisplayDataSource()
         self.label_source = DisplayDataSource()
         self.label_source.set_display_string(self.get_label())
+        return
 
     def get_label(self):
         raise NotImplementedError
@@ -203,8 +204,10 @@ class NoteSettingsComponent(ControlSurfaceComponent):
 
         else:
             map(lambda setting: setting.set_encoder(None), self._settings)
+        return
 
     def update(self):
+        super(NoteSettingsComponent, self).update()
         self._update_encoders()
 
 
@@ -218,6 +221,7 @@ class DetailViewRestorerMode(Mode):
         super(DetailViewRestorerMode, self).__init__(*a, **k)
         self._app = application
         self._view_to_restore = None
+        return
 
     def enter_mode(self):
         clip_view_visible = self._app.view.is_view_visible('Detail/Clip', False)
@@ -232,6 +236,8 @@ class DetailViewRestorerMode(Mode):
                 self._view_to_restore = None
         except RuntimeError:
             pass
+
+        return
 
 
 class NoteEditorSettingsComponent(ModesComponent):
@@ -279,6 +285,7 @@ class NoteEditorSettingsComponent(ModesComponent):
         self._editors = []
         self._on_detail_clip_changed.subject = self.song().view
         self._on_selected_track_changed.subject = self.song().view
+        return
 
     automation_layer = forward_property('_automation')('layer')
     mode_selector_layer = forward_property('_mode_selector')('layer')
@@ -289,6 +296,7 @@ class NoteEditorSettingsComponent(ModesComponent):
         self._editors.append(editor)
         self._on_active_steps_changed.add_subject(editor)
         self._on_notes_changed.replace_subjects(self._editors)
+        return
 
     def set_display_line(self, line):
         self._mode_selector.set_display_line(line)
@@ -365,6 +373,7 @@ class NoteEditorSettingsComponent(ModesComponent):
     def _on_detail_clip_changed(self):
         clip = self.song().view.detail_clip if self.is_enabled() else None
         self._automation.clip = clip
+        return
 
     @subject_slot('selected_track')
     def _on_selected_track_changed(self):
@@ -412,6 +421,7 @@ class NoteEditorSettingsComponent(ModesComponent):
 
             edit_all_notes_active = find_if(lambda e: e.modify_all_notes_enabled, self._editors) != None
             self.settings.set_info_message('Tweak to add note' if not edit_all_notes_active and not min_max_values else '')
+        return
 
     def _show_settings(self):
         if self.selected_mode != 'enabled':
@@ -436,5 +446,6 @@ class NoteEditorSettingsComponent(ModesComponent):
             self.selected_mode = 'disabled'
 
     def update(self):
+        super(NoteEditorSettingsComponent, self).update()
         if self.is_enabled():
             self._on_detail_clip_changed()

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/ConfigurableButtonElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/ConfigurableButtonElement.py
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_NOTE_TYPE, MIDI_CC_TYPE, MIDI_CC_STATUS
 from consts import *
@@ -74,3 +74,4 @@ class ConfigurableButtonElement(ButtonElement):
                     is_input = True
                     self._report_value(value, not is_input)
         self._force_next_value = False
+        return

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/SpecialSessionComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/SpecialSessionComponent.py
 from _Framework.SessionComponent import SessionComponent
 
 class SpecialSessionComponent(SessionComponent):
@@ -8,3 +8,5 @@ class SpecialSessionComponent(SessionComponent):
             scene = self.selected_scene()
             slot = scene.clip_slot(i)
             slot.set_launch_button(button)
+
+        return

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl/ChannelStripController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl/ChannelStripController.py
 from MackieControlComponent import *
 from _Generic.Devices import *
 from itertools import chain
@@ -77,6 +77,7 @@ class ChannelStripController(MackieControlComponent):
 
         self.__reassign_channel_strip_offsets()
         self.__reassign_channel_strip_parameters(for_display_only=False)
+        return
 
     def destroy(self):
         self.song().remove_visible_tracks_listener(self.__on_tracks_added_or_deleted)
@@ -265,6 +266,7 @@ class ChannelStripController(MackieControlComponent):
                 self.__reorder_parameters()
                 self.__plugin_mode_offsets[PCM_PARAMETERS] = 0
                 self.__set_plugin_mode(PCM_PARAMETERS)
+        return
 
     def __strip_offset(self):
         """ return the bank_channel offset depending if we are in return mode or not
@@ -309,6 +311,7 @@ class ChannelStripController(MackieControlComponent):
                 return (None, None)
         else:
             raise 0 or AssertionError
+        return None
 
     def __any_slider_is_touched(self):
         for s in self.__channel_strips:
@@ -366,6 +369,7 @@ class ChannelStripController(MackieControlComponent):
                 raise 0 or AssertionError
         else:
             return None
+        return None
 
     def __routing_target(self, channel_strip):
         raise self.__assignment_mode == CSM_IO or AssertionError
@@ -383,6 +387,7 @@ class ChannelStripController(MackieControlComponent):
                 raise 0 or AssertionError
         else:
             return None
+        return None
 
     def __set_routing_target(self, channel_strip, target_string):
         raise self.__assignment_mode == CSM_IO or AssertionError
@@ -450,6 +455,7 @@ class ChannelStripController(MackieControlComponent):
             self.__update_vpot_leds_in_plugins_device_choose_mode()
         self.__update_flip_led()
         self.request_rebuild_midi_map()
+        return
 
     def __set_plugin_mode(self, new_mode):
         """ Set a new plugin sub-mode, which can be:
@@ -472,6 +478,7 @@ class ChannelStripController(MackieControlComponent):
             self.__update_page_switch_leds()
             self.__update_flip_led()
             self.__update_page_switch_leds()
+        return
 
     def __switch_to_prev_page(self):
         """ Switch to the previous page in the non track strip modes (choosing plugs, or
@@ -570,6 +577,7 @@ class ChannelStripController(MackieControlComponent):
         self.__main_display_controller.set_channel_offset(self.__strip_offset())
         if len(display_parameters):
             self.__main_display_controller.set_parameters(display_parameters)
+        return None
 
     def __apply_meter_mode(self):
         """ Update the meter mode in the displays and channel strips """
@@ -613,6 +621,8 @@ class ChannelStripController(MackieControlComponent):
                 self.send_midi((NOTE_ON_STATUS, s, BUTTON_STATE_ON))
             else:
                 self.send_midi((NOTE_ON_STATUS, s, BUTTON_STATE_OFF))
+
+        return
 
     def __update_assignment_display(self):
         """ Cryptically label the current assignment mode in the 2char display above
@@ -726,6 +736,7 @@ class ChannelStripController(MackieControlComponent):
                         self.__displayed_plugins.append(None)
 
                 self.__update_plugin_names()
+        return
 
     def __update_plugin_names(self):
         raise self.__assignment_mode == CSM_PLUGINS and self.__plugin_mode == PCM_DEVICES or AssertionError
@@ -737,6 +748,7 @@ class ChannelStripController(MackieControlComponent):
                 device_strings.append('')
 
         self.__main_display_controller.set_channel_strip_strings(device_strings)
+        return
 
     def __update_view_returns_mode(self):
         """ Update the control return tracks LED
@@ -775,6 +787,7 @@ class ChannelStripController(MackieControlComponent):
             self.__reassign_channel_strip_parameters(for_display_only=False)
             self.__update_assignment_display()
             self.request_rebuild_midi_map()
+        return
 
     def __on_flip_changed(self):
         """ Update the flip button LED when the flip mode changed
@@ -798,6 +811,7 @@ class ChannelStripController(MackieControlComponent):
                         self.__chosen_plugin.remove_parameters_listener(self.__on_parameter_list_of_chosen_plugin_changed)
                     self.__chosen_plugin = None
                     self.__set_plugin_mode(PCM_DEVICES)
+        return
 
     def __on_tracks_added_or_deleted(self):
         """ Notifier, called as soon as tracks where added, removed or moved
@@ -837,6 +851,7 @@ class ChannelStripController(MackieControlComponent):
         self.__reorder_parameters()
         self.__reassign_channel_strip_parameters(for_display_only=False)
         self.request_rebuild_midi_map()
+        return
 
     def __reorder_parameters(self):
         result = []

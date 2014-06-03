@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/SpecialMixerComponent.py
 from _Framework.MixerComponent import MixerComponent
 from DisplayingChanStripComponent import DisplayingChanStripComponent
 
@@ -24,6 +24,7 @@ class SpecialMixerComponent(MixerComponent):
         MixerComponent.disconnect(self)
         self._name_display = None
         self._value_display = None
+        return
 
     def tracks_to_use(self):
         return self.song().visible_tracks + self.song().return_tracks

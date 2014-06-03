@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_DirectLink/ShiftableSessionComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_DirectLink/ShiftableSessionComponent.py
 from _Framework.SessionComponent import SessionComponent
 from _Framework.ButtonElement import ButtonElement
 
@@ -9,6 +9,7 @@ class ShiftableSessionComponent(SessionComponent):
         self._shift_button = None
         self._clip_slot_buttons = None
         SessionComponent.__init__(self, num_tracks, num_scenes)
+        return
 
     def disconnect(self):
         SessionComponent.disconnect(self)
@@ -16,6 +17,7 @@ class ShiftableSessionComponent(SessionComponent):
             self._shift_button.remove_value_listener(self._shift_value)
             self._shift_button = None
         self._clip_slot_buttons = None
+        return
 
     def set_shift_button(self, shift_button):
         if not (shift_button == None or shift_button.is_momentary()):
@@ -24,11 +26,13 @@ class ShiftableSessionComponent(SessionComponent):
                 self._shift_button.remove_value_listener(self._shift_value)
             self._shift_button = shift_button
             self._shift_button != None and self._shift_button.add_value_listener(self._shift_value)
+        return
 
     def set_clip_slot_buttons(self, buttons):
         raise buttons == None or isinstance(buttons, tuple) and len(buttons) == self._num_tracks or AssertionError
         self._clip_slot_buttons = buttons
         self._shift_value(0)
+        return
 
     def on_selected_track_changed(self):
         SessionComponent.on_selected_track_changed(self)
@@ -50,12 +54,15 @@ class ShiftableSessionComponent(SessionComponent):
             else:
                 slot.set_launch_button(self._clip_slot_buttons[index])
 
+        return
+
     def _bank_right_value(self, value):
         if not value in range(128):
             raise AssertionError
             if not self._bank_right_button != None:
                 raise AssertionError
                 self.is_enabled() and (value is not 0 or not self._bank_right_button.is_momentary()) and self.set_offsets(self._track_offset + self._num_tracks, self.scene_offset())
+        return
 
     def _bank_left_value(self, value):
         if not isinstance(value, int):
@@ -63,3 +70,4 @@ class ShiftableSessionComponent(SessionComponent):
             if not self._bank_left_button != None:
                 raise AssertionError
                 self.is_enabled() and (value is not 0 or not self._bank_left_button.is_momentary()) and self.set_offsets(max(0, self._track_offset - self._num_tracks), self.scene_offset())
+        return

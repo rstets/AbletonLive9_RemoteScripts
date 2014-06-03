@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_MxDCore/LomUtils.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_MxDCore/LomUtils.py
 import sys
 from _Tools import types
 from MxDUtils import TupleWrapper
@@ -65,6 +65,8 @@ class LomInformation(object):
                     self._properties.append((prop_name, info_type))
         except (AssertionError, RuntimeError):
             pass
+
+        return
 
 
 class LomIntrospection(object):

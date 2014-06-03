@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/NumericalDisplayElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/NumericalDisplayElement.py
 from _Framework.PhysicalDisplayElement import PhysicalDisplayElement
 from NumericalDisplaySegment import NumericalDisplaySegment
 
@@ -32,6 +32,7 @@ class NumericalDisplayElement(PhysicalDisplayElement):
             raise isinstance(message, str) or AssertionError
             message = self._block_messages or NumericalDisplaySegment.adjust_string(message, self._width)
             self.send_midi(self._message_header + tuple([ self._translate_char(c) for c in message ]) + self._message_tail)
+        return
 
     def _translate_char(self, char_to_translate):
         if not char_to_translate != None:

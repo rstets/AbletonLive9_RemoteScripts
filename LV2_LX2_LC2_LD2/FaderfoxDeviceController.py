@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/LV2_LX2_LC2_LD2/FaderfoxDeviceController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/LV2_LX2_LC2_LD2/FaderfoxDeviceController.py
 import Live
 from FaderfoxComponent import FaderfoxComponent
 from consts import *
@@ -30,6 +30,7 @@ class FaderfoxDeviceController(FaderfoxComponent):
         self.parent.song().view.add_selected_track_listener(self.on_track_selected_callback)
         self.parent.song().view.add_detail_clip_listener(self.on_selected_clip)
         self.selected_track = None
+        return
 
     def on_loop_end(self):
         pass
@@ -80,6 +81,7 @@ class FaderfoxDeviceController(FaderfoxComponent):
 
         self.map_device_params(script_handle, midi_map_handle)
         forward_cc(CHANNEL_SETUP2, CLIP_TRANSPOSE_CC)
+        return
 
     def map_device_params(self, script_handle, midi_map_handle):
 
@@ -125,6 +127,8 @@ class FaderfoxDeviceController(FaderfoxComponent):
                         ParamMap.map_with_feedback(midi_map_handle, channel, ccs[encoder], parameter, mode2)
                     else:
                         self.log('Could not find parameter %s' % param_bank[encoder])
+
+            return
 
         self.log('map device params %s' % self.device)
         if self.device:
@@ -214,6 +218,7 @@ class FaderfoxDeviceController(FaderfoxComponent):
                 else:
                     parameter.value = parameter.default_value
             self.log('device %s, index %s, parameter %s' % (self.device, idx, parameter.name))
+        return
 
     def receive_midi_cc(self, chan, cc_no, cc_value):
 

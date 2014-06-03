@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/PeekableEncoderElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/PeekableEncoderElement.py
 import Live
 from _Framework.EncoderElement import EncoderElement
 from _Framework.InputControlElement import *
@@ -25,3 +25,4 @@ class PeekableEncoderElement(EncoderElement):
             self._parameter_to_map_to = None
         InputControlElement.install_connections(self, install_translation_callback, install_mapping_callback, install_forwarding_callback)
         self._parameter_to_map_to = current_parameter
+        return

@@ -1,6 +1,7 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/TouchEncoderElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/TouchEncoderElement.py
 from _Framework.EncoderElement import EncoderElement
 from _Framework.SubjectSlot import subject_slot, SlotManager
+from _Framework.Util import nop, const
 
 class TouchEncoderObserver(object):
     """ Interface for observing the state of one or more TouchEncoderElements """
@@ -14,6 +15,13 @@ class TouchEncoderObserver(object):
 
 class TouchEncoderElement(EncoderElement, SlotManager):
     """ Class representing an encoder that is touch sensitive """
+
+    class ProxiedInterface(EncoderElement.ProxiedInterface):
+        is_pressed = const(False)
+        add_touch_value_listener = nop
+        remove_touch_value_listener = nop
+        touch_value_has_listener = nop
+
     __subject_events__ = ('touch_value',)
 
     def __init__(self, msg_type, channel, identifier, map_mode, undo_step_handler = None, delete_handler = None, touch_button = None, *a, **k):
@@ -26,6 +34,7 @@ class TouchEncoderElement(EncoderElement, SlotManager):
         self._delete_handler = delete_handler
         self.set_touch_button(touch_button)
         self.set_observer(None)
+        return
 
     def is_pressed(self):
         return self.touch_button and self.touch_button.is_pressed()
@@ -38,6 +47,7 @@ class TouchEncoderElement(EncoderElement, SlotManager):
         if observer is None:
             observer = TouchEncoderObserver()
         self._observer = observer
+        return
 
     @subject_slot('value')
     def _on_touch_button(self, value):
@@ -67,6 +77,7 @@ class TouchEncoderElement(EncoderElement, SlotManager):
         if self.mapped_parameter() != None:
             super(TouchEncoderElement, self).release_parameter()
             self._observer.on_encoder_parameter(self)
+        return
 
     def receive_value(self, value):
         if self._undo_step_handler and self._trigger_undo_step:

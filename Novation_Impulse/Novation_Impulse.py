@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Novation_Impulse/Novation_Impulse.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Novation_Impulse/Novation_Impulse.py
 from __future__ import with_statement
 import Live
 from _Framework.ControlSurface import ControlSurface
@@ -69,6 +69,8 @@ class Novation_Impulse(ControlSurface):
             for component in self.components:
                 component.set_enabled(False)
 
+        return
+
     def refresh_state(self):
         ControlSurface.refresh_state(self)
         self.schedule_message(3, self._send_midi, SYSEX_START + (6, 1, 1, 1, 247))
@@ -99,6 +101,7 @@ class Novation_Impulse(ControlSurface):
 
             self._encoder_modes.set_provide_volume_mode(not self._has_sliders)
             self.request_rebuild_midi_map()
+        return
 
     def disconnect(self):
         self._name_display_data_source.set_display_string('  ')
@@ -127,6 +130,7 @@ class Novation_Impulse(ControlSurface):
         self._encoder_modes = None
         self._transport_view_modes = None
         self._send_midi(SYSEX_START + (6, 0, 0, 0, 247))
+        return
 
     def build_midi_map(self, midi_map_handle):
         self._current_midi_map = midi_map_handle
@@ -141,6 +145,7 @@ class Novation_Impulse(ControlSurface):
             self._display_reset_delay -= 1
             if self._display_reset_delay == -1:
                 self._show_current_track_name()
+        return
 
     def _setup_mixer(self):
         mute_solo_flip_button = ButtonElement(not IS_MOMENTARY, MIDI_CC_TYPE, 0, 34)
@@ -175,12 +180,14 @@ class Novation_Impulse(ControlSurface):
 
     def _setup_session(self):
         num_pads = len(PAD_TRANSLATIONS)
+        self._track_left_button = ButtonElement(not IS_MOMENTARY, MIDI_CC_TYPE, 0, 36)
+        self._track_right_button = ButtonElement(not IS_MOMENTARY, MIDI_CC_TYPE, 0, 35)
         self._session = SessionComponent(8, 0)
         self._session.name = 'Session_Control'
         self._session.selected_scene().name = 'Selected_Scene'
         self._session.set_mixer(self._mixer)
-        self._session.set_track_banking_increment(num_pads)
-        self._session.set_track_bank_buttons(ButtonElement(not IS_MOMENTARY, MIDI_CC_TYPE, 0, 35), ButtonElement(not IS_MOMENTARY, MIDI_CC_TYPE, 0, 36))
+        self._session.set_page_left_button(self._track_left_button)
+        self._session.set_page_right_button(self._track_right_button)
         pads = []
         for index in range(num_pads):
             pads.append(ButtonElement(IS_MOMENTARY, MIDI_CC_TYPE, 0, 60 + index))
@@ -250,6 +257,7 @@ class Novation_Impulse(ControlSurface):
                 display_string = self._device_component.is_enabled() and ' - '
                 display_string = sender.mapped_parameter() != None and sender.mapped_parameter().name
             self._set_string_to_display(display_string)
+        return
 
     def _slider_value(self, value, sender):
         if not sender in tuple(self._sliders) + (self._master_slider,):
@@ -278,6 +286,7 @@ class Novation_Impulse(ControlSurface):
                     raise False or AssertionError
                 display_string += ' Volume'
             self._set_string_to_display(display_string)
+        return
 
     def _mixer_button_value(self, value, sender):
         if not value in range(128):
@@ -290,6 +299,7 @@ class Novation_Impulse(ControlSurface):
                 self._display_reset_delay = STANDARD_DISPLAY_DELAY
             else:
                 self._set_string_to_display(' - ')
+        return
 
     def _preview_value(self, value):
         raise value in range(128) or AssertionError
@@ -301,6 +311,7 @@ class Novation_Impulse(ControlSurface):
             self._string_to_display = None
             self._name_display.segment(0).set_data_source(self._mixer.selected_strip().track_name_data_source())
             self._name_display.update()
+        return
 
     def _show_startup_message(self):
         self._name_display.display_message('LIVE')

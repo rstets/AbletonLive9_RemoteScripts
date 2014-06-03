@@ -1,11 +1,10 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SpecialSessionComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SpecialSessionComponent.py
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.SessionComponent import SessionComponent
 from _Framework.ClipSlotComponent import ClipSlotComponent
 from _Framework.SceneComponent import SceneComponent
 from _Framework.SessionZoomingComponent import SessionZoomingComponent
 from _Framework.SubjectSlot import subject_slot
-from _Framework.ScrollComponent import ScrollComponent
 from _Framework.Util import forward_property
 from _Framework.ModesComponent import EnablingModesComponent
 from MessageBoxComponent import Messenger
@@ -28,6 +27,7 @@ class SpecialSessionZoomingComponent(SessionZoomingComponent):
         layer = self._session.layer
         if layer:
             layer.priority = None if is_enabled else consts.HIDDEN_SESSION_PRIORITY
+        return
 
 
 class DuplicateSceneComponent(ControlSurfaceComponent, Messenger):
@@ -37,6 +37,7 @@ class DuplicateSceneComponent(ControlSurfaceComponent, Messenger):
         raise session or AssertionError
         self._session = session
         self._scene_buttons = None
+        return
 
     def set_scene_buttons(self, buttons):
         self._scene_buttons = buttons
@@ -55,9 +56,6 @@ class DuplicateSceneComponent(ControlSurfaceComponent, Messenger):
             except IndexError:
                 pass
 
-    def update(self):
-        pass
-
 
 class SpecialClipSlotComponent(ClipSlotComponent, Messenger):
 
@@ -71,6 +69,7 @@ class SpecialClipSlotComponent(ClipSlotComponent, Messenger):
         if self._clip_slot != None:
             if self.song().view.highlighted_clip_slot != self._clip_slot:
                 self.song().view.highlighted_clip_slot = self._clip_slot
+        return
 
     def _do_duplicate_clip(self):
         if self._clip_slot and self._clip_slot.has_clip:
@@ -87,14 +86,6 @@ class SpecialClipSlotComponent(ClipSlotComponent, Messenger):
 
 class SpecialSceneComponent(SceneComponent, Messenger):
     clip_slot_component_type = SpecialClipSlotComponent
-
-    def _on_is_triggered_changed(self):
-        if not self._scene != None:
-            raise AssertionError
-            if self.is_enabled() and self._launch_button != None:
-                self._scene.is_triggered and self._launch_button.send_value(self._triggered_value)
-            else:
-                self._launch_button.turn_on()
 
     def _do_delete_scene(self, scene):
         try:
@@ -119,77 +110,25 @@ class SpecialSessionComponent(SessionComponent):
         super(SpecialSessionComponent, self).__init__(*a, **k)
         self._slot_launch_button = None
         self._duplicate_button = None
-        self._duplicate, self._paginator = self.register_components(DuplicateSceneComponent(self), ScrollComponent())
+        self._duplicate = self.register_component(DuplicateSceneComponent(self))
         self._duplicate_enabler = self.register_component(EnablingModesComponent(component=self._duplicate))
         self._duplicate_enabler.momentary_toggle = True
-        self._paginator.can_scroll_up = self._can_scroll_page_up
-        self._paginator.can_scroll_down = self._can_scroll_page_down
-        self._paginator.scroll_up = self._scroll_page_up
-        self._paginator.scroll_down = self._scroll_page_down
-        self._track_playing_slots = self.register_slot_manager()
         self._end_initialisation()
+        return
 
     duplicate_layer = forward_property('_duplicate')('layer')
 
     def set_duplicate_button(self, button):
         self._duplicate_enabler.set_toggle_button(button)
 
-    def set_page_up_button(self, page_up_button):
-        self._paginator.set_scroll_up_button(page_up_button)
-
-    def set_page_down_button(self, page_down_button):
-        self._paginator.set_scroll_down_button(page_down_button)
-
     def set_slot_launch_button(self, button):
         self._slot_launch_button = button
         self._on_slot_launch_value.subject = button
-
-    def set_stop_track_clip_buttons(self, buttons):
-        for button in buttons or []:
-            if button:
-                button.set_on_off_values('Option.On', 'Option.Off')
-
-        super(SpecialSessionComponent, self).set_stop_track_clip_buttons(buttons)
 
     def set_clip_launch_buttons(self, buttons):
         if buttons:
             buttons.reset()
         super(SpecialSessionComponent, self).set_clip_launch_buttons(buttons)
-
-    def _reassign_scenes(self):
-        super(SpecialSessionComponent, self)._reassign_scenes()
-        self._paginator.update()
-
-    def _reassign_tracks(self):
-        super(SpecialSessionComponent, self)._reassign_tracks()
-        self._track_playing_slots.disconnect()
-        tracks_to_use = self.tracks_to_use()
-        for index in range(self._num_tracks):
-            listener = lambda index = index: self._on_playing_slot_index_changed(index)
-            if self._track_offset + index < len(tracks_to_use):
-                track = tracks_to_use[self._track_offset + index]
-                if track in self.song().tracks:
-                    self._track_slots.register_slot(track, listener, 'playing_slot_index')
-            listener()
-
-    def _on_fired_slot_index_changed(self, index):
-        self._update_stop_clips_led(index)
-
-    def _on_playing_slot_index_changed(self, index):
-        self._update_stop_clips_led(index)
-
-    def _update_stop_clips_led(self, index):
-        track_index = index + self.track_offset()
-        tracks_to_use = self.tracks_to_use()
-        if self.is_enabled() and self._stop_track_clip_buttons != None and index < len(self._stop_track_clip_buttons):
-            button = self._stop_track_clip_buttons[index]
-            if button != None:
-                if track_index < len(tracks_to_use) and tracks_to_use[track_index].clip_slots and tracks_to_use[track_index].fired_slot_index == -2:
-                    button.set_light('Mixer.StoppingTrack')
-                elif track_index < len(tracks_to_use) and tracks_to_use[track_index].clip_slots and tracks_to_use[track_index].playing_slot_index >= 0:
-                    button.set_light('Mixer.StopTrack')
-                else:
-                    button.turn_off()
 
     @subject_slot('value')
     def _on_slot_launch_value(self, value):
@@ -200,28 +139,7 @@ class SpecialSessionComponent(SessionComponent):
                 self._slot_launch_button.turn_on()
             else:
                 self._slot_launch_button.turn_off()
+        return
 
-    def _can_scroll_page_up(self):
-        return self.scene_offset() > 0
-
-    def _can_scroll_page_down(self):
-        return self.scene_offset() < len(self.song().scenes) - self.height()
-
-    def _scroll_page_up(self):
-        height = self.height()
-        track_offset = self.track_offset()
-        scene_offset = self.scene_offset()
-        if scene_offset > 0:
-            new_scene_offset = scene_offset
-            if scene_offset % height > 0:
-                new_scene_offset -= scene_offset % height
-            else:
-                new_scene_offset = max(0, scene_offset - height)
-            self.set_offsets(track_offset, new_scene_offset)
-
-    def _scroll_page_down(self):
-        height = self.height()
-        track_offset = self.track_offset()
-        scene_offset = self.scene_offset()
-        new_scene_offset = scene_offset + height - scene_offset % height
-        self.set_offsets(track_offset, new_scene_offset)
+    def set_show_highlight(self, show_highlight):
+        super(SpecialSessionComponent, self).set_show_highlight(True)

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/SpecialSessionComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/SpecialSessionComponent.py
 from _Framework.SessionComponent import SessionComponent
 
 class SpecialSessionComponent(SessionComponent):
@@ -10,6 +10,7 @@ class SpecialSessionComponent(SessionComponent):
         self._next_track_button = None
         self._prev_track_button = None
         SessionComponent.__init__(self, num_tracks, num_scenes)
+        return
 
     def disconnect(self):
         SessionComponent.disconnect(self)
@@ -20,11 +21,13 @@ class SpecialSessionComponent(SessionComponent):
         if self._prev_track_button != None:
             self._prev_track_button.remove_value_listener(self._prev_track_value)
             self._prev_track_button = None
+        return
 
     def set_alt_mixer(self, alt_mixer):
         self._alt_mixer = alt_mixer
         if self._alt_mixer != None:
             self._alt_mixer.set_track_offset(self.track_offset())
+        return
 
     def set_track_select_buttons(self, next_button, prev_button):
         do_update = False
@@ -44,6 +47,7 @@ class SpecialSessionComponent(SessionComponent):
                 self._prev_track_button.add_value_listener(self._prev_track_value)
         if do_update:
             self.on_selected_track_changed()
+        return
 
     def tracks_to_use(self):
         list_of_tracks = None
@@ -54,9 +58,6 @@ class SpecialSessionComponent(SessionComponent):
         else:
             list_of_tracks = self.song().visible_tracks
         return list_of_tracks
-
-    def track_banking_increment(self):
-        return self._track_banking_increment
 
     def _change_offsets(self, track_increment, scene_increment):
         if not track_increment != 0:
@@ -73,6 +74,7 @@ class SpecialSessionComponent(SessionComponent):
                 self._reassign_scenes()
                 self.notify_offset()
                 self.width() > 0 and self.height() > 0 and self._do_show_highlight()
+        return
 
     def _next_track_value(self, value):
         if self.is_enabled():

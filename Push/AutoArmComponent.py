@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/AutoArmComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/AutoArmComponent.py
 """
 Component that automatically arms the selected track.
 """
@@ -25,6 +25,7 @@ class AutoArmRestoreBehaviour(LatchingBehaviour):
         self._auto_arm = auto_arm
         self._last_update_params = None
         self._skip_super = False
+        return
 
     def _mode_is_active(self, component, mode, selected_mode):
         groups = component.get_mode_groups(mode)
@@ -82,6 +83,7 @@ class AutoArmComponent(CompoundComponent):
         self._on_tracks_changed.subject = self.song()
         self._on_exclusive_arm_changed.subject = self.song()
         self._on_tracks_changed()
+        return
 
     notification_layer = forward_property('_notification')('message_box_layer')
 
@@ -108,6 +110,7 @@ class AutoArmComponent(CompoundComponent):
             self._notification.hide_notification()
 
     def update(self):
+        super(AutoArmComponent, self).update()
         song = self.song()
         if self.is_enabled():
             enabled = not self.needs_restore_auto_arm

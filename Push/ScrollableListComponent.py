@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/ScrollableListComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/ScrollableListComponent.py
 """
 Scrollable list component.
 """
@@ -31,6 +31,7 @@ class ScrollableListComponent(ControlSurfaceComponent):
         self._select_buttons = []
         self._select_button_slots = self.register_slot_manager()
         self.register_slot(self, self._set_selected_option, 'press_option')
+        return
 
     def set_display_line(self, line):
         if line:
@@ -78,6 +79,7 @@ class ScrollableListComponent(ControlSurfaceComponent):
             self._selected_option = selected_option
             self.notify_change_option(selected_option)
             self.update()
+        return
 
     selected_option = property(_get_selected_option, _set_selected_option)
 
@@ -115,6 +117,7 @@ class ScrollableListComponent(ControlSurfaceComponent):
             self.notify_press_option(index if index < len(self._option_names) else None)
         else:
             self.notify_press_option(index + self._offset_index - 1)
+        return
 
     def _get_display_string(self, option_index):
         if option_index < len(self._option_names):
@@ -124,6 +127,7 @@ class ScrollableListComponent(ControlSurfaceComponent):
             return ''
 
     def update(self):
+        super(ScrollableListComponent, self).update()
         if not self.is_enabled():
             return
         first_segment, max_segment = 0, self.num_segments
@@ -173,6 +177,7 @@ class ScrollableListWithTogglesComponent(ScrollableListComponent):
             slot.subject = button
 
         self._update_state_buttons()
+        return
 
     def option_state(self, index):
         return self._option_states[index]
@@ -196,6 +201,7 @@ class ScrollableListWithTogglesComponent(ScrollableListComponent):
                     self.notify_press_option(None)
             else:
                 self.notify_press_option(None)
+        return
 
     def _set_option_names(self, names):
         """ overrides """
@@ -229,3 +235,5 @@ class ScrollableListWithTogglesComponent(ScrollableListComponent):
             for button in buttons[len(self._option_states):]:
                 if button != None:
                     button.turn_off()
+
+        return

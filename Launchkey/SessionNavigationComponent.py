@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchkey/SessionNavigationComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchkey/SessionNavigationComponent.py
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ScrollComponent import ScrollComponent
 from _Framework import Task
@@ -67,6 +67,7 @@ class ArmingTrackScrollComponent(ScrollComponent):
 
                 track_to_arm.arm = True
                 track_to_arm.view.select_instrument()
+        return
 
     def _arm_task(self, delta):
         result_state = Task.KILLED
@@ -105,6 +106,3 @@ class SessionNavigationComponent(CompoundComponent):
 
     def set_prev_scene_button(self, button):
         self._scroll_scenes.set_scroll_up_button(button)
-
-    def update(self):
-        pass

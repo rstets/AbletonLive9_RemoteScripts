@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/UserSettingsComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/UserSettingsComponent.py
 from itertools import count
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.DisplayDataSource import DisplayDataSource
@@ -61,6 +61,7 @@ class UserSettingsComponent(ControlSurfaceComponent):
             self._value_sources[index].set_display_string(str(setting))
 
     def update(self):
+        super(UserSettingsComponent, self).update()
         if self.is_enabled():
             self._update_display()
 
@@ -78,6 +79,7 @@ class UserComponent(ActionWithSettingsComponent):
         self._value_control = value_control
         self._on_value.subject = self._value_control
         self._selected_mode = Sysex.LIVE_MODE
+        return
 
     def show_settings(self):
         self._settings.set_enabled(True)

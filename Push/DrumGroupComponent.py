@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/DrumGroupComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/DrumGroupComponent.py
 from itertools import imap, ifilter
 from _Framework.SubjectSlot import subject_slot
 from _Framework.Util import find_if, first
@@ -14,7 +14,6 @@ class DrumGroupComponent(SlideComponent, Slideable, Messenger):
     __subject_events__ = ('pressed_pads',)
 
     def __init__(self, *a, **k):
-        super(DrumGroupComponent, self).__init__(dragging_enabled=True, *a, **k)
         self._select_button = None
         self._quantize_button = None
         self._delete_button = None
@@ -26,8 +25,10 @@ class DrumGroupComponent(SlideComponent, Slideable, Messenger):
         self._all_drum_pads = []
         self._selected_drum_pad = None
         self._selected_pads = []
-        self._visible_drum_pad_slots = self.register_slot_manager()
         self._takeover_drums = False
+        super(DrumGroupComponent, self).__init__(dragging_enabled=True, *a, **k)
+        self._visible_drum_pad_slots = self.register_slot_manager()
+        return
 
     position_count = 32
     page_length = 4
@@ -80,6 +81,7 @@ class DrumGroupComponent(SlideComponent, Slideable, Messenger):
             self._on_selected_drum_pad_changed()
             self.notify_contents()
             super(DrumGroupComponent, self).update()
+        return
 
     def set_drum_matrix(self, matrix):
         self._drum_matrix = matrix
@@ -184,6 +186,7 @@ class DrumGroupComponent(SlideComponent, Slideable, Messenger):
     def _on_selected_drum_pad_changed(self):
         self._selected_drum_pad = self._drum_group_device.view.selected_drum_pad if self._drum_group_device else None
         self._update_drum_pad_leds()
+        return
 
     @subject_slot('value')
     def _on_drum_matrix_value(self, value, x, y, is_momentary):
@@ -196,6 +199,7 @@ class DrumGroupComponent(SlideComponent, Slideable, Messenger):
                     self._on_press_pad(selected_drum_pad, pad)
                 else:
                     self._on_release_pad(selected_drum_pad, pad)
+        return
 
     def _on_release_pad(self, selected_drum_pad, pad):
         self._indicate_action(False, pad)

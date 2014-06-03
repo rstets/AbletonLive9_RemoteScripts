@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialMixerComponent.py
 import Live
 from _Framework.MixerComponent import MixerComponent
 from SpecialChanStripComponent import SpecialChanStripComponent
@@ -12,10 +12,13 @@ class SpecialMixerComponent(MixerComponent):
         for index in range(num_tracks):
             self._channel_strips[index].set_index(index)
 
+        return
+
     def disconnect(self):
         MixerComponent.disconnect(self)
         self._serato_interface = None
         self._tracks_to_use_callback = None
+        return
 
     def set_tracks_to_use_callback(self, callback):
         self._tracks_to_use_callback = callback
@@ -24,6 +27,7 @@ class SpecialMixerComponent(MixerComponent):
         raise serato_interface != None or AssertionError
         self._serato_interface = serato_interface
         self.on_selected_track_changed()
+        return
 
     def tracks_to_use(self):
         tracks = tuple()
@@ -37,6 +41,7 @@ class SpecialMixerComponent(MixerComponent):
         MixerComponent.on_selected_track_changed(self)
         if self._serato_interface != None:
             self._serato_interface.PySCA_SetSelectedTrack(self._selected_strip_index())
+        return
 
     def _selected_strip_index(self):
         result = -1

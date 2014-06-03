@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NoteRepeatComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NoteRepeatComponent.py
 from _Framework.ModesComponent import ModesComponent
 from _Framework import Task
 from _Framework.CompoundComponent import CompoundComponent
@@ -37,6 +37,7 @@ class NoteRepeatComponent(CompoundComponent):
         self._options.selected_option = 5
         self._on_selected_option_changed.subject = self._options
         self.set_note_repeat(None)
+        return
 
     def on_enabled_changed(self):
         if self.is_enabled():
@@ -45,6 +46,7 @@ class NoteRepeatComponent(CompoundComponent):
             self._disable_note_repeat()
 
     def update(self):
+        super(NoteRepeatComponent, self).update()
         self._update_aftertouch()
 
     def _update_aftertouch(self):
@@ -56,7 +58,7 @@ class NoteRepeatComponent(CompoundComponent):
         self._update_aftertouch()
 
     def set_select_buttons(self, buttons):
-        self._options.set_select_buttons(buttons)
+        self._options.select_buttons.set_control_element(buttons)
 
     def set_note_repeat(self, note_repeat):
         if not note_repeat:
@@ -64,6 +66,7 @@ class NoteRepeatComponent(CompoundComponent):
             self._note_repeat.enabled = self._note_repeat != None and False
         self._note_repeat = note_repeat
         self._update_note_repeat(enabled=self.is_enabled())
+        return
 
     def _enable_note_repeat(self):
         self._last_record_quantization = self._song.midi_recording_quantization

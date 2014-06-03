@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/QuantizationComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/QuantizationComponent.py
 import Live
 RecordingQuantization = Live.Song.RecordingQuantization
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
@@ -55,6 +55,7 @@ class QuantizationSettingsComponent(ControlSurfaceComponent):
         self._update_quantize_amount_display()
 
     def update(self):
+        super(QuantizationSettingsComponent, self).update()
         self._update_record_quantization_button()
 
     def set_display_line1(self, line):
@@ -86,6 +87,7 @@ class QuantizationSettingsComponent(ControlSurfaceComponent):
             self._on_quantize_to_value.subject = None
             self._on_quantize_amount_value.subject = None
             self._on_record_quantization_value.subject = None
+        return
 
     def set_select_buttons(self, buttons):
         self._on_record_quantization_on_value.subject = buttons[7] if buttons else None
@@ -94,6 +96,7 @@ class QuantizationSettingsComponent(ControlSurfaceComponent):
                 button.reset()
 
         self._update_record_quantization_button()
+        return
 
     def set_state_buttons(self, buttons):
         if buttons:

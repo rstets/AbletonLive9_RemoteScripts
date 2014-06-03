@@ -1,19 +1,22 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/Actions.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/Actions.py
+from itertools import izip, count
 import Live
 _Q = Live.Song.Quantization
+from _Framework.Control import ButtonControl, control_list
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.CompoundComponent import CompoundComponent
-from _Framework.SubjectSlot import subject_slot
+from _Framework.SubjectSlot import subject_slot, subject_slot_group
 from _Framework.DisplayDataSource import DisplayDataSource
 from _Framework.ModesComponent import SetAttributeMode, ModesComponent
 from _Framework import Task
-from _Framework.Util import forward_property
+from _Framework.Util import forward_property, clamp
 from _Framework.Dependency import depends
 from MessageBoxComponent import Messenger
 from ActionWithOptionsComponent import ActionWithSettingsComponent, OptionsComponent
 from ClipControlComponent import convert_length_to_bars_beats_sixteenths
 from BrowserModes import BrowserAddEffectMode
-from consts import MessageBoxText
+from SpecialMixerComponent import tracks_to_use_from_song
+from consts import MessageBoxText, SIDE_BUTTON_COLORS
 
 def convert_length_to_mins_secs(length_in_secs):
     if length_in_secs is None:
@@ -62,27 +65,24 @@ class DuplicateDetailClipComponent(ActionWithSettingsComponent, Messenger):
             except RuntimeError:
                 self.show_notification(MessageBoxText.CLIP_DUPLICATION_FAILED)
 
+        return
+
 
 class DuplicateLoopComponent(ActionWithSettingsComponent, Messenger):
 
     def __init__(self, *a, **k):
         super(DuplicateLoopComponent, self).__init__(*a, **k)
         self._on_detail_clip_changed.subject = self.song().view
+        self._on_detail_clip_changed()
 
     @subject_slot('detail_clip')
     def _on_detail_clip_changed(self):
-        self._update_action_button()
+        self.action_button.enabled = self.can_duplicate_loop
 
     @property
     def can_duplicate_loop(self):
         clip = self.song().view.detail_clip
         return clip and clip.is_midi_clip
-
-    def _update_action_button(self):
-        if self.can_duplicate_loop:
-            super(DuplicateLoopComponent, self)._update_action_button()
-        elif self._action_button and self.is_enabled():
-            self._action_button.set_light('DefaultButton.Disabled')
 
     def trigger_action(self):
         if self.can_duplicate_loop:
@@ -93,6 +93,8 @@ class DuplicateLoopComponent(ActionWithSettingsComponent, Messenger):
                     self.show_notification(MessageBoxText.DUPLICATE_LOOP % dict(length=convert_length_to_bars_beats_sixteenths(clip.loop_end - clip.loop_start)))
                 except RuntimeError:
                     pass
+
+        return
 
 
 class DeleteSelectedClipComponent(ActionWithSettingsComponent, Messenger):
@@ -106,6 +108,7 @@ class DeleteSelectedClipComponent(ActionWithSettingsComponent, Messenger):
             name = slot.clip.name
             slot.delete_clip()
             self.show_notification(MessageBoxText.DELETE_CLIP % name)
+        return
 
 
 class DeleteSelectedSceneComponent(ActionWithSettingsComponent, Messenger):
@@ -144,6 +147,8 @@ class SelectionDisplayComponent(ControlSurfaceComponent):
             for idx in xrange(self.num_segments):
                 display_line.segment(idx).set_data_source(self._data_sources[idx])
 
+        return
+
     def set_display_string(self, string, segment = 0):
         if segment < self.num_segments:
             self._data_sources[segment].set_display_string(string)
@@ -156,28 +161,21 @@ class SelectionDisplayComponent(ControlSurfaceComponent):
         for idx in xrange(self.num_segments / 2, self.num_segments):
             self._data_sources[idx].set_display_string(' ')
 
-    def update(self):
-        pass
-
 
 class SelectComponent(CompoundComponent):
     """
     This component handles selection of objects.
     """
+    select_button = ButtonControl(**SIDE_BUTTON_COLORS)
 
     def __init__(self, *a, **k):
         super(SelectComponent, self).__init__(*a, **k)
         self._selected_clip = None
-        self._select_button = None
         self._selection_display = self.register_component(SelectionDisplayComponent())
         self._selection_display.set_enabled(False)
+        return
 
     selection_display_layer = forward_property('_selection_display')('layer')
-
-    def set_select_button(self, button):
-        if self._select_button != button:
-            self._select_button = button
-            self._on_select_value.subject = button
 
     def set_selected_clip(self, clip):
         self._selected_clip = clip
@@ -200,6 +198,7 @@ class SelectComponent(CompoundComponent):
         self._selection_display.set_display_string(clip_name, 1)
         self._do_show_time_remaining()
         self._selection_display.set_enabled(True)
+        return
 
     @subject_slot('playing_position')
     def _on_playing_position_changed(self):
@@ -224,6 +223,7 @@ class SelectComponent(CompoundComponent):
             time = ' '
         self._selection_display.set_display_string(label, 2)
         self._selection_display.set_display_string(time, 3)
+        return
 
     def on_select_scene(self, scene):
         if scene != None:
@@ -236,6 +236,7 @@ class SelectComponent(CompoundComponent):
         self._selection_display.set_display_string(scene_name, 1)
         self._selection_display.reset_display_right()
         self._selection_display.set_enabled(True)
+        return
 
     def on_select_track(self, track):
         if track != None:
@@ -246,6 +247,7 @@ class SelectComponent(CompoundComponent):
         self._selection_display.set_display_string(track_name, 1)
         self._selection_display.reset_display_right()
         self._selection_display.set_enabled(True)
+        return
 
     def on_select_drum_pad(self, drum_pad):
         if drum_pad != None:
@@ -256,16 +258,14 @@ class SelectComponent(CompoundComponent):
         self._selection_display.set_display_string(drum_pad_name, 1)
         self._selection_display.reset_display_right()
         self._selection_display.set_enabled(True)
+        return
 
-    @subject_slot('value')
-    def _on_select_value(self, value):
-        if value == 0:
-            self._selection_display.set_enabled(False)
-            self._selection_display.reset_display()
-            self.set_selected_clip(None)
-
-    def update(self):
-        pass
+    @select_button.released
+    def select_button(self, control):
+        self._selection_display.set_enabled(False)
+        self._selection_display.reset_display()
+        self.set_selected_clip(None)
+        return
 
 
 class DeleteComponent(ControlSurfaceComponent, Messenger):
@@ -276,6 +276,7 @@ class DeleteComponent(ControlSurfaceComponent, Messenger):
     def __init__(self, *a, **k):
         super(DeleteComponent, self).__init__(*a, **k)
         self._delete_button = None
+        return
 
     def set_delete_button(self, button):
         self._delete_button = button
@@ -296,9 +297,6 @@ class DeleteComponent(ControlSurfaceComponent, Messenger):
         if playing_slot_index >= 0:
             return selected_track.clip_slots[playing_slot_index].clip
 
-    def update(self):
-        pass
-
 
 class CreateDefaultTrackComponent(CompoundComponent, Messenger):
 
@@ -313,12 +311,14 @@ class CreateDefaultTrackComponent(CompoundComponent, Messenger):
         self.options.unselected_color = 'Browser.Load'
         self._on_option_selected.subject = self.options
         self._selection = selection
+        return
 
     @subject_slot('selected_option')
     def _on_option_selected(self, option):
         if option is not None:
             self.create_track()
             self.options.selected_option = None
+        return
 
     def create_track(self):
         try:
@@ -339,9 +339,7 @@ class CreateDefaultTrackComponent(CompoundComponent, Messenger):
 
     def on_enabled_changed(self):
         self.options.selected_option = None
-
-    def update(self):
-        pass
+        return
 
 
 class CreateInstrumentTrackComponent(CompoundComponent, Messenger):
@@ -363,9 +361,11 @@ class CreateInstrumentTrackComponent(CompoundComponent, Messenger):
     def on_enabled_changed(self):
         self._with_browser_modes.selected_mode = 'create' if self.is_enabled() else None
         self._go_to_hotswap_task.kill()
+        return
 
     def _prepare_browser(self):
         self.application().browser.hotswap_target = None
+        return
 
     def _do_browser_load_item(self, item):
         song = self.song()
@@ -381,9 +381,6 @@ class CreateInstrumentTrackComponent(CompoundComponent, Messenger):
 
     def _go_to_hotswap(self):
         self._with_browser_modes.selected_mode = 'hotswap'
-
-    def update(self):
-        pass
 
 
 class CreateDeviceComponent(CompoundComponent):
@@ -411,9 +408,6 @@ class CreateDeviceComponent(CompoundComponent):
             else:
                 self._create_device_modes.selected_mode = 'create'
 
-    def update(self):
-        pass
-
     def _go_to_hotswap(self):
         self._create_device_modes.selected_mode = 'hotswap'
 
@@ -423,3 +417,89 @@ class CreateDeviceComponent(CompoundComponent):
             self._selection.selected_object = selection
         item.action()
         self._go_to_hotswap_task.restart()
+
+
+class StopClipComponent(ControlSurfaceComponent):
+    stop_all_clips_button = ButtonControl()
+    stop_track_clips_buttons = control_list(ButtonControl, color='Session.StoppedClip')
+
+    def __init__(self, *a, **k):
+        super(StopClipComponent, self).__init__(*a, **k)
+        self._track_offset = 0
+        self._on_tracks_changed.subject = self.song()
+        self._on_tracks_changed()
+
+    def _get_track_offset(self):
+        return self._track_offset
+
+    def _set_track_offset(self, value):
+        if not 0 <= value < len(tracks_to_use_from_song(self.song())):
+            raise IndexError
+        self._track_offset = value
+        self._update_all_stop_buttons()
+
+    track_offset = property(_get_track_offset, _set_track_offset)
+
+    @stop_all_clips_button.pressed
+    def stop_all_clips_button(self, button):
+        self.song().stop_all_clips()
+
+    @stop_track_clips_buttons.pressed
+    def stop_track_clips_buttons(self, button):
+        button.track.stop_all_clips()
+
+    @subject_slot('visible_tracks')
+    def _on_tracks_changed(self):
+        tracks = tracks_to_use_from_song(self.song())
+        self._track_offset = clamp(self._track_offset, 0, len(tracks) - 1)
+        self._on_fired_slot_index_changed.replace_subjects(tracks, count())
+        self._on_playing_slot_index_changed.replace_subjects(tracks, count())
+        self._update_all_stop_buttons()
+
+    @subject_slot_group('fired_slot_index')
+    def _on_fired_slot_index_changed(self, track_index):
+        self._update_stop_button_by_index(track_index - self._track_offset)
+
+    @subject_slot_group('playing_slot_index')
+    def _on_playing_slot_index_changed(self, track_index):
+        self._update_stop_button_by_index(track_index - self._track_offset)
+
+    def _update_all_stop_buttons(self):
+        tracks = tracks_to_use_from_song(self.song())[self._track_offset:]
+        self.stop_track_clips_buttons.control_count = len(tracks)
+        for track, button in izip(tracks, self.stop_track_clips_buttons):
+            self._update_stop_button(track, button)
+
+    def _update_stop_button_by_index(self, index):
+        button = self.stop_track_clips_buttons[index]
+        self._update_stop_button(button.track, button)
+
+    def _update_stop_button(self, track, button):
+        has_clip_slots = bool(track.clip_slots)
+        if has_clip_slots:
+            if track.fired_slot_index == -2:
+                button.color = 'Session.StopClipTriggered'
+            elif track.playing_slot_index >= 0:
+                button.color = 'Session.StopClip'
+            else:
+                button.color = 'Session.StoppedClip'
+        button.enabled = bool(has_clip_slots)
+        button.track = track
+
+
+class UndoRedoComponent(ControlSurfaceComponent, Messenger):
+    undo_skin = dict(color='DefaultButton.Off', pressed_color='DefaultButton.On')
+    undo_button = ButtonControl(**undo_skin)
+    redo_button = ButtonControl(**undo_skin)
+
+    @undo_button.pressed
+    def undo_button(self, button):
+        if self.song().can_undo:
+            self.song().undo()
+            self.show_notification(MessageBoxText.UNDO)
+
+    @redo_button.pressed
+    def redo_button(self, button):
+        if self.song().can_redo:
+            self.song().redo()
+            self.show_notification(MessageBoxText.REDO)

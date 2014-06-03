@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/sre_parse.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/sre_parse.py
 """Internal support module for sre"""
 import sys
 from sre_constants import *
@@ -77,6 +77,7 @@ class SubPattern():
             data = []
         self.data = data
         self.width = None
+        return
 
     def dump(self, level = 0):
         nl = 1
@@ -207,6 +208,7 @@ class Tokenizer():
             char = char + c
         self.index = self.index + len(char)
         self.next = char
+        return
 
     def match(self, char, skip = 1):
         if char == self.next:

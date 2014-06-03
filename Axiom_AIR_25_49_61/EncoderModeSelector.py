@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/EncoderModeSelector.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/EncoderModeSelector.py
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from consts import *
 
@@ -19,6 +19,7 @@ class EncoderModeSelector(ModeSelectorComponent):
         self._mixer = None
         self._device = None
         self._encoders = None
+        return
 
     def set_mode_buttons(self, buttons):
         for button in buttons:
@@ -30,6 +31,7 @@ class EncoderModeSelector(ModeSelectorComponent):
         return self._number_of_modes
 
     def update(self):
+        super(EncoderModeSelector, self).update()
         if self.is_enabled():
             self._device.set_allow_update(False)
             self._mixer.set_allow_update(False)
@@ -68,6 +70,7 @@ class EncoderModeSelector(ModeSelectorComponent):
                 self._device.set_parameter_controls(self._encoders)
             self._device.set_allow_update(True)
             self._mixer.set_allow_update(True)
+        return
 
     def _mode_value(self, value, sender):
         if self.is_enabled() and value is not 0 or not sender.is_momentary():

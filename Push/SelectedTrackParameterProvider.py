@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SelectedTrackParameterProvider.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SelectedTrackParameterProvider.py
 from _Framework.Dependency import depends
 from _Framework.SubjectSlot import subject_slot, SlotManager
 from DeviceParameterComponent import ParameterProvider
@@ -13,6 +13,7 @@ class SelectedTrackParameterProvider(ParameterProvider, SlotManager):
         self._on_selected_track.subject = song.view
         self._on_visible_tracks.subject = song
         self._on_selected_track()
+        return
 
     @property
     def parameters(self):

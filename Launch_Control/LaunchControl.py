@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/LaunchControl.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/LaunchControl.py
 from __future__ import with_statement
 from functools import partial
 import Live
@@ -173,6 +173,7 @@ class LaunchControl(ControlSurface):
         self._modes.add_mode('user', None)
         self._modes.selected_mode = 'mixer'
         self._modes.layer = Layer(mixer_button=ButtonSysexControl(Sysex.MIXER_MODE), session_button=ButtonSysexControl(Sysex.SESSION_MODE), device_button=ButtonSysexControl(Sysex.DEVICE_MODE))
+        return
 
     @subject_slot('offset')
     def _on_track_offset(self):

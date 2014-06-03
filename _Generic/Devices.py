@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Generic/Devices.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Generic/Devices.py
 from functools import partial
 from _Framework.Util import group
 RCK_BANK1 = ('Macro 1', 'Macro 2', 'Macro 3', 'Macro 4', 'Macro 5', 'Macro 6', 'Macro 7', 'Macro 8')
@@ -491,6 +491,7 @@ def parameter_bank_names(device, bank_name_dict = BANK_NAME_DICT):
                         return str(filter(_is_ascii, name))
                     else:
                         return _default_bank_name(bank_index)
+                    return
 
                 return map(_bank_name, range(0, banks))
             else:
@@ -526,6 +527,7 @@ def parameter_banks(device, device_dict = DEVICE_DICT):
                             return [ None for i in range(0, 8) ]
                         else:
                             return [ (device.parameters[i] if i != -1 else None) for i in parameter_indices ]
+                        return None
 
                     return map(_bank_parameters, range(0, banks))
             return group(device_parameters_to_map(device), 8)
@@ -572,3 +574,5 @@ def get_parameter_by_name(device, name):
     for i in device.parameters:
         if i.original_name == name:
             return i
+
+    return None

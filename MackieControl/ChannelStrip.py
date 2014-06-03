@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl/ChannelStrip.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl/ChannelStrip.py
 from MackieControlComponent import *
 from itertools import chain
 
@@ -23,6 +23,7 @@ class ChannelStrip(MackieControlComponent):
         self.__within_track_added_or_deleted = False
         self.__within_destroy = False
         self.set_bank_and_channel_offset(offset=0, show_return_tracks=False, within_track_added_or_deleted=False)
+        return
 
     def destroy(self):
         self.__within_destroy = True
@@ -36,6 +37,7 @@ class ChannelStrip(MackieControlComponent):
         self.refresh_state()
         MackieControlComponent.destroy(self)
         self.__within_destroy = False
+        return
 
     def set_channel_strip_controller(self, channel_strip_controller):
         self.__channel_strip_controller = channel_strip_controller
@@ -80,6 +82,7 @@ class ChannelStrip(MackieControlComponent):
                 self.__add_listeners()
         self.refresh_state()
         self.__within_track_added_or_deleted = False
+        return
 
     def v_pot_parameter(self):
         return self.__v_pot_parameter
@@ -151,10 +154,12 @@ class ChannelStrip(MackieControlComponent):
                         touched = value == BUTTON_PRESSED
                         self.set_is_touched(touched)
                         self.__channel_strip_controller.handle_fader_touch(self.__strip_index, self.__stack_offset, touched)
+        return
 
     def handle_vpot_rotation(self, strip_index, cc_value):
         if strip_index is self.__strip_index and self.__channel_strip_controller != None:
             self.__channel_strip_controller.handle_vpot_rotation(self.__strip_index, self.__stack_offset, cc_value)
+        return
 
     def refresh_state(self):
         if not self.__within_track_added_or_deleted:
@@ -168,6 +173,7 @@ class ChannelStrip(MackieControlComponent):
         if not self.__assigned_track:
             self.reset_fader()
             self.unlight_vpot_leds()
+        return
 
     def on_update_display_timer(self):
         if self.__signal_led_enabled or self.__meters_enabled:
@@ -221,6 +227,7 @@ class ChannelStrip(MackieControlComponent):
 
         if not (self.__assigned_track and 0):
             raise AssertionError
+        return None
 
     def __add_listeners(self):
         if self.__assigned_track.can_be_armed:

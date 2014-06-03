@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Novation_Impulse/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Novation_Impulse/SpecialMixerComponent.py
 from _Framework.MixerComponent import MixerComponent
 from _Framework.ButtonElement import ButtonElement
 
@@ -13,6 +13,7 @@ class SpecialMixerComponent(MixerComponent):
         MixerComponent.__init__(self, num_tracks)
         self._selected_tracks = []
         self._register_timer_callback(self._on_timer)
+        return
 
     def disconnect(self):
         self._unregister_timer_callback(self._on_timer)
@@ -26,6 +27,7 @@ class SpecialMixerComponent(MixerComponent):
             self._mute_solo_flip_button = None
         self._selected_mute_solo_button = None
         self._strip_mute_solo_buttons = None
+        return
 
     def set_shift_button(self, shift_button):
         if not (shift_button == None or shift_button.is_momentary()):
@@ -34,12 +36,14 @@ class SpecialMixerComponent(MixerComponent):
                 self._shift_button.remove_value_listener(self._shift_value)
             self._shift_button = shift_button
             self._shift_button != None and self._shift_button.add_value_listener(self._shift_value)
+        return
 
     def set_selected_mute_solo_button(self, button):
         raise isinstance(button, (type(None), ButtonElement)) or AssertionError
         self._selected_mute_solo_button = button
         self.selected_strip().set_mute_button(self._selected_mute_solo_button)
         self.selected_strip().set_solo_button(None)
+        return
 
     def set_strip_mute_solo_buttons(self, buttons, flip_button):
         if not (buttons is None or isinstance(buttons, tuple) and len(buttons) == len(self._channel_strips)):
@@ -58,6 +62,8 @@ class SpecialMixerComponent(MixerComponent):
             strip.set_mute_button(button)
             strip.set_solo_button(None)
 
+        return
+
     def tracks_to_use(self):
         return tuple(self.song().visible_tracks) + tuple(self.song().return_tracks)
 
@@ -70,6 +76,7 @@ class SpecialMixerComponent(MixerComponent):
         else:
             self.selected_strip().set_solo_button(None)
             self.selected_strip().set_mute_button(self._selected_mute_solo_button)
+        return
 
     def _mute_solo_flip_value(self, value):
         raise self._mute_solo_flip_button != None or AssertionError
@@ -83,6 +90,8 @@ class SpecialMixerComponent(MixerComponent):
                 else:
                     strip.set_solo_button(None)
                     strip.set_mute_button(self._strip_mute_solo_buttons[index])
+
+        return
 
     def _on_timer(self):
         sel_track = None
@@ -120,6 +129,7 @@ class SpecialMixerComponent(MixerComponent):
                 sel_track.arm = True
                 sel_track.view.select_instrument()
         self._selected_tracks = []
+        return
 
     def _next_track_value(self, value):
         MixerComponent._next_track_value(self, value)

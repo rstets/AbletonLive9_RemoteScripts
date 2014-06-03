@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/sre_compile.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/sre_compile.py
 """Internal support module for sre"""
 import _sre, sys
 from sre_constants import *
@@ -211,6 +211,7 @@ def _compile_charset(charset, flags, code, fixup = None):
             raise error, 'internal: unsupported set operator'
 
     emit(OPCODES[FAILURE])
+    return
 
 
 def _optimize_charset(charset, fixup):

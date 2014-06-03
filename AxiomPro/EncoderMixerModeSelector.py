@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/EncoderMixerModeSelector.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/EncoderMixerModeSelector.py
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.DisplayDataSource import DisplayDataSource
@@ -18,6 +18,7 @@ class EncoderMixerModeSelector(ModeSelectorComponent):
         self._parameter_sources = [ DisplayDataSource() for index in range(8) ]
         self._show_volume_page = False
         self._mixer.set_update_callback(self._mixer_assignments_changed)
+        return
 
     def disconnect(self):
         for button in self._modes_buttons:
@@ -30,6 +31,7 @@ class EncoderMixerModeSelector(ModeSelectorComponent):
         self._current_page_data_source = None
         self._parameter_sources = None
         ModeSelectorComponent.disconnect(self)
+        return
 
     def set_modes_buttons(self, buttons):
         raise buttons == None or isinstance(buttons, tuple) or len(buttons) == self.number_of_modes() or AssertionError
@@ -46,12 +48,14 @@ class EncoderMixerModeSelector(ModeSelectorComponent):
 
         self.set_mode(0)
         self.update()
+        return
 
     def set_controls(self, controls):
         raise controls == None or isinstance(controls, tuple) and len(controls) == 8 or AssertionError
         self._controls = controls
         self.set_mode(0)
         self.update()
+        return
 
     def set_show_volume_page(self, show):
         if not isinstance(show, type(False)):
@@ -65,6 +69,7 @@ class EncoderMixerModeSelector(ModeSelectorComponent):
                     self._page_name_sources[idx].set_display_string(self._page_names[idx + offset])
 
             self.update()
+        return
 
     def page_name_data_source(self, index):
         if not index in range(4):
@@ -91,6 +96,7 @@ class EncoderMixerModeSelector(ModeSelectorComponent):
         return 4
 
     def update(self):
+        super(EncoderMixerModeSelector, self).update()
         if not self._modes_buttons != None:
             raise AssertionError
             if self.is_enabled() and self._controls != None:
@@ -119,6 +125,8 @@ class EncoderMixerModeSelector(ModeSelectorComponent):
                 else:
                     print 'Invalid mode index'
                     raise False or AssertionError
+
+        return
 
     def _mixer_assignments_changed(self):
         self.update()

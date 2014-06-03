@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Generic/SelectChanStripComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Generic/SelectChanStripComponent.py
 import Live
 from _Framework.ChannelStripComponent import ChannelStripComponent
 
@@ -20,3 +20,4 @@ class SelectChanStripComponent(ChannelStripComponent):
                     ChannelStripComponent._arm_value(self, value)
                     if self._track != None and self._track.can_be_armed:
                         self.song().view.selected_track = self._track.arm and not track_was_armed and self._track.view.select_instrument() and self._track
+        return

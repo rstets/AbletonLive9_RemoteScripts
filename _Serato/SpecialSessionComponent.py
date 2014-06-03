@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialSessionComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialSessionComponent.py
 import Live
 from _Framework.SessionComponent import SessionComponent
 from _Framework.InputControlElement import *
@@ -14,6 +14,7 @@ class SpecialSessionComponent(SessionComponent):
         self._synced_session = None
         self._serato_interface = None
         SessionComponent.__init__(self, num_tracks, num_scenes)
+        return
 
     def disconnect(self):
         SessionComponent.disconnect(self)
@@ -21,16 +22,19 @@ class SpecialSessionComponent(SessionComponent):
             self._synced_session.remove_offset_listener(self._on_control_surface_offset_changed)
             self._mixer.set_tracks_to_use_callback(None)
         self._serato_interface = None
+        return
 
     def set_serato_interface(self, serato_interface):
         raise serato_interface != None or AssertionError
         self._serato_interface = serato_interface
         self.on_selected_scene_changed()
+        return
 
     def on_selected_scene_changed(self):
         SessionComponent.on_selected_scene_changed(self)
         if self._serato_interface != None:
             self._serato_interface.PySCA_SetSelectedScene(self._selected_scene_index())
+        return
 
     def set_size(self, width, height):
         if not width in range(self._num_tracks + 1):
@@ -63,12 +67,14 @@ class SpecialSessionComponent(SessionComponent):
                 self._synced_session != None and self._synced_session.add_offset_listener(self._on_control_surface_offset_changed)
                 self._mixer.set_tracks_to_use_callback(self._synced_session.tracks_to_use)
             self._do_show_highlight()
+        return
 
     def set_offsets(self, track_offset, scene_offset):
         if self._synced_session != None:
             self._synced_session.set_offsets(track_offset, scene_offset)
         else:
             SessionComponent.set_offsets(self, track_offset, scene_offset)
+        return
 
     def _on_control_surface_offset_changed(self):
         """

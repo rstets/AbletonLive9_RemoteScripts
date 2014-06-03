@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/PageableDeviceComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/PageableDeviceComponent.py
 import Live
 from _Generic.Devices import *
 from _Framework.DeviceComponent import DeviceComponent
@@ -88,6 +88,7 @@ class PageableDeviceComponent(DeviceComponent):
         self._parameter_name_data_sources = None
         self._page_name_data_sources = None
         DeviceComponent.disconnect(self)
+        return
 
     def set_device(self, device):
         DeviceComponent.set_device(self, device)
@@ -98,9 +99,12 @@ class PageableDeviceComponent(DeviceComponent):
             for source in self._page_name_data_sources:
                 source.set_display_string(' - ')
 
+        return
+
     def set_bank_buttons(self, buttons):
         raise buttons == None or isinstance(buttons, tuple) and len(buttons) == 4 or AssertionError
         DeviceComponent.set_bank_buttons(self, buttons)
+        return
 
     def set_parameter_controls(self, controls):
         raise controls == None or isinstance(controls, tuple) and len(controls) == 8 or AssertionError
@@ -116,6 +120,7 @@ class PageableDeviceComponent(DeviceComponent):
                 raise isinstance(control, EncoderElement) or AssertionError
 
         self.update()
+        return
 
     def parameter_value_data_source(self):
         return self._parameter_value_data_source
@@ -144,6 +149,7 @@ class PageableDeviceComponent(DeviceComponent):
                     else:
                         self._page_index[bank] += 1
                     self.update()
+        return
 
     def _assign_parameters(self):
         if not self.is_enabled():
@@ -161,6 +167,8 @@ class PageableDeviceComponent(DeviceComponent):
                 self._parameter_name_data_sources[index].set_display_string(self._parameter_controls[index].mapped_parameter().name)
             else:
                 self._parameter_name_data_sources[index].set_display_string(' - ')
+
+        return
 
     def __assign_parameters_special(self):
         """ Assign the controls to the parameters of a device with more than 4 pages """
@@ -187,6 +195,8 @@ class PageableDeviceComponent(DeviceComponent):
                     self._page_name_data_sources[index].set_display_string(page_names[self._page_index[index] % len(page_names)])
             else:
                 self._page_name_data_sources[index].set_display_string(' - ')
+
+        return
 
     def __assign_parameters_normal(self):
         """ Assign the controls to the parameters of a device with 4 pages or less """
@@ -215,6 +225,8 @@ class PageableDeviceComponent(DeviceComponent):
                 self._page_name_data_sources[index].set_display_string(bank_names[index])
             else:
                 self._page_name_data_sources[index].set_display_string(' - ')
+
+        return
 
     def __assign_parameters_plugin(self):
         """ Assign the controls to the parameters of a plugin """

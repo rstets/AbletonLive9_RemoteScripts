@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_MxDCore/__init__.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_MxDCore/__init__.py
 from MxDCore import MxDCore as _MxDCore
 import sys
 
@@ -7,6 +7,7 @@ def set_manager(manager):
     raise _MxDCore.instance == None or AssertionError
     _MxDCore.instance = _MxDCore()
     _MxDCore.instance.set_manager(manager)
+    return
 
 
 def disconnect():
@@ -31,3 +32,4 @@ def execute_command(device_id, object_id, command, arguments):
 
     else:
         _MxDCore.instance._raise(device_id, object_id, 'Unknown command: ' + command)
+    return

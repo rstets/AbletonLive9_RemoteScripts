@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/Setting.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/Setting.py
 from math import fabs
 from _Framework.Util import sign, clamp
 from _Framework.SubjectSlot import Subject, SubjectEvent
@@ -19,6 +19,7 @@ class Setting(Subject):
             default_value = name in self._preferences and self._preferences[name] in values and self._preferences[name]
         self._preferences[name] = None
         self.value = default_value
+        return
 
     def __str__(self):
         return self.value_to_string(self.value)
@@ -28,7 +29,7 @@ class Setting(Subject):
             raise AssertionError
             self._preferences[self.name] = self._preferences[self.name] != value and value
             self.on_value_changed(value)
-            self.notify_value(self)
+            self.notify_value(self.value)
 
     def _get_value(self):
         return self._preferences[self.name]
@@ -80,6 +81,7 @@ class EnumerableSetting(Setting):
             relative_position = int(sign(self._relative_value))
             self._relative_value -= self.STEP_SIZE
             return self._jump_relative(relative_position) != None
+        return None
 
     def _jump_relative(self, relative_position):
         current_position = self.values.index(self.value)

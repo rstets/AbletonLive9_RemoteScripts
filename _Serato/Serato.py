@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/Serato.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/Serato.py
 from __future__ import with_statement
 import Live
 import libInterprocessCommsAPIPython
@@ -52,11 +52,13 @@ class Serato(ControlSurface):
             self._setup_device_control()
             self._session.set_mixer(self._mixer)
             self.set_highlighting_session_component(self._session)
+        return
 
     def disconnect(self):
         ControlSurface.disconnect(self)
         self._serato_interface.PySCA_DeinitializeClipControl()
         self._serato_interface = None
+        return
 
     def connect_script_instances(self, instanciated_scripts):
         """ Called by the Application as soon as all scripts are initialized.

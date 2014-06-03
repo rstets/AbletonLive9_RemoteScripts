@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/LV2_LX2_LC2_LD2/FaderfoxScript.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/LV2_LX2_LC2_LD2/FaderfoxScript.py
 import Live
 from consts import *
 import sys
@@ -31,6 +31,7 @@ class FaderfoxScript:
             live = 'Live 5'
         self.show_message(self.__name__ + ' ' + self.__version__ + ' for ' + live)
         self.is_lv1 = False
+        return
 
     def is_live_5(self):
         return hasattr(Live, 'is_live_5')

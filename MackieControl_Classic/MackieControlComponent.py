@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl_Classic/MackieControlComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControl_Classic/MackieControlComponent.py
 from consts import *
 import Live
 
@@ -10,6 +10,7 @@ class MackieControlComponent:
 
     def destroy(self):
         self.__main_script = None
+        return
 
     def main_script(self):
         return self.__main_script

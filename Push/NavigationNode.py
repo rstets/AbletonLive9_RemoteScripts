@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NavigationNode.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/NavigationNode.py
 import Live.DrumPad
 import Live.Song
 import Live.Track
@@ -100,6 +100,7 @@ class NavigationNode(SlotManager, Subject):
         if selected_child_index == None and self.children:
             self.selected_child = 0
         self.notify_selected_child(self.selected_child)
+        return
 
     def disconnect(self):
         self.clear_children_listeners()
@@ -117,6 +118,7 @@ class ModelNode(NavigationNode):
         self._state = []
         self._selected_child = None
         self._in_update_children = False
+        return
 
     def _get_children_from_model(self):
         pass
@@ -151,6 +153,7 @@ class ModelNode(NavigationNode):
         else:
             self._selected_child = None
             self._set_selected_child_in_model(None)
+        return
 
     def set_state(self, child, value):
         if child >= 0 and child < len(self._children):
@@ -181,6 +184,7 @@ class ModelNode(NavigationNode):
         children = [ c[1] for c in self._children ]
         self._selected_child = children.index(selected) if selected in children else None
         self.notify_selected_child(self._selected_child)
+        return
 
     def _update_state(self, child):
         children = map(second, self.children)
@@ -233,6 +237,7 @@ class ChainNode(ModelNode):
                 _, selected_object = self.children[new_selected_child_index]
                 isinstance(selected_object, Live.Device.Device) and track and track.view.selected_device != selected_object and self._get_song().view.select_device(selected_object)
         self._device_bank_registry.set_device_bank(track.view.selected_device, None)
+        return
 
     def delete_child(self, index):
         if index >= 0 and index < len(self._children):
@@ -250,6 +255,7 @@ class ChainNode(ModelNode):
                 return [(d.name, d), (drum_pad_name, drum_pad)]
             else:
                 return [(d.name, d)]
+            return
 
         return list(flatten(imap(expand_device, self._object.devices)))
 
@@ -262,6 +268,7 @@ class ChainNode(ModelNode):
         elif selected and isinstance(selected, Live.Device.Device):
             song.view.select_device(selected)
             self._device_bank_registry.set_device_bank(selected, None)
+        return
 
     def _get_selected_child_from_model(self):
         devices = map(second, self.children)
@@ -282,6 +289,8 @@ class ChainNode(ModelNode):
                 return selected
             selected = selected.canonical_parent
             is_deeper = True
+
+        return
 
     def _get_state_from_model(self, child):
         if isinstance(child, Live.DrumPad.DrumPad):
@@ -304,6 +313,7 @@ class ChainNode(ModelNode):
                 child.parameters[0].value = int(value)
                 return value
             return bool(on_off.value)
+        return
 
     @subject_slot('devices')
     def _on_devices_changed_in_live(self):
@@ -360,6 +370,7 @@ class SongNode(ModelNode):
     def _set_selected_child_in_model(self, value):
         if value != None:
             self._object.view.selected_track = value
+        return
 
     def _get_children_from_model(self):
         tracks_to_use = tracks_to_use_from_song(self._object)
@@ -387,6 +398,7 @@ class SimpleDeviceNode(ModelNode):
     def _set_selected_child_in_model(self, value):
         if value != None:
             self._device_bank_registry.set_device_bank(self.object, value)
+        return
 
     def _get_children_from_model(self):
         names = parameter_bank_names(self.object)
@@ -408,6 +420,7 @@ class RackNode(ModelNode):
     def _set_selected_child_in_model(self, value):
         if value != None:
             self._object.view.selected_chain = value
+        return
 
     def _get_children_from_model(self):
         return map(lambda c: (c.name, c), self._object.chains)

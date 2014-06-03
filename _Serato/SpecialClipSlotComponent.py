@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialClipSlotComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Serato/SpecialClipSlotComponent.py
 import Live
 import libInterprocessCommsAPIPython
 from _Framework.ClipSlotComponent import ClipSlotComponent
@@ -13,6 +13,7 @@ class SpecialClipSlotComponent(ClipSlotComponent):
         self._scene_index = -1
         self._track_index = -1
         self._serato_interface = None
+        return
 
     def disconnect(self):
         if self._clip_slot != None and self.has_clip():
@@ -23,6 +24,7 @@ class SpecialClipSlotComponent(ClipSlotComponent):
         self._on_name_changed()
         self._on_color_changed()
         self._serato_interface = None
+        return
 
     def set_serato_interface(self, serato_interface):
         if not serato_interface != None:
@@ -33,6 +35,7 @@ class SpecialClipSlotComponent(ClipSlotComponent):
         self._on_name_changed()
         self._on_color_changed()
         self.update()
+        return
 
     def set_clip_slot(self, clip_slot):
         if self._clip_slot != None and self.has_clip():
@@ -46,6 +49,7 @@ class SpecialClipSlotComponent(ClipSlotComponent):
         self._on_name_changed()
         self._on_color_changed()
         self.update()
+        return
 
     def set_indexes(self, scene_index, track_index):
         raise scene_index >= 0 or AssertionError
@@ -78,6 +82,7 @@ class SpecialClipSlotComponent(ClipSlotComponent):
                     self._serato_interface.PySCA_SetClipPlayState(self._track_index + 1, self._scene_index + 1, value_to_send)
         else:
             self._update_requests += 1
+        return
 
     @subject_slot('has_clip')
     def _on_clip_state_changed(self):
@@ -95,6 +100,7 @@ class SpecialClipSlotComponent(ClipSlotComponent):
         self._on_color_changed()
         self._on_name_changed()
         self.update()
+        return
 
     def _on_name_changed(self):
         if self._serato_interface != None and -1 not in (self._track_index, self._scene_index):
@@ -102,11 +108,13 @@ class SpecialClipSlotComponent(ClipSlotComponent):
             if self._clip_slot != None and self.has_clip():
                 name = self._clip_slot.clip.name
             self._serato_interface.PySCA_SetClipLabel(self._track_index + 1, self._scene_index + 1, name)
+        return
 
     def _on_color_changed(self):
         if self._serato_interface != None and -1 not in (self._track_index, self._scene_index):
             if self._clip_slot != None and self.has_clip():
                 self._serato_interface.PySCA_SetClipColor(self._track_index + 1, self._scene_index + 1, self._clip_slot.clip.color)
+        return
 
     def _on_load_state_changed(self):
         if self._serato_interface != None and -1 not in (self._track_index, self._scene_index):
@@ -114,3 +122,4 @@ class SpecialClipSlotComponent(ClipSlotComponent):
             if self._clip_slot != None and self.has_clip():
                 value_to_send = libInterprocessCommsAPIPython.kAbletonClipIsLoaded
             self._serato_interface.PySCA_SetClipLoadState(self._track_index + 1, self._scene_index + 1, value_to_send)
+        return

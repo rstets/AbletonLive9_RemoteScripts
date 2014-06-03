@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/PadSensitivity.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/PadSensitivity.py
 from itertools import repeat
 from _Framework import Task
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
@@ -43,6 +43,7 @@ def pad_parameter_sender(global_control, pad_control):
             pad_control.send_value((pad,) + parameters.sysex_bytes)
         else:
             global_control.send_value(parameters.sysex_bytes)
+        return
 
     return do_send
 
@@ -72,6 +73,7 @@ class PadUpdateComponent(ControlSurfaceComponent):
         self._profile_count = {'default': len(all_pads)}
         self._update_task = self._tasks.add(Task.sequence(Task.wait(update_delay), Task.run(self._update_modified)))
         self._update_task.restart()
+        return
 
     def set_profile(self, profile_id, parameters):
         self._profiles[profile_id] = parameters
@@ -93,6 +95,7 @@ class PadUpdateComponent(ControlSurfaceComponent):
             self._profile_count[new_profile] += 1
 
     def update(self):
+        super(PadUpdateComponent, self).update()
         self._add_modified_pads(self._all_pads)
         self._update_modified()
 

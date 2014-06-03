@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchpad/PreciseButtonSliderElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchpad/PreciseButtonSliderElement.py
 from _Framework.ButtonSliderElement import ButtonSliderElement
 from _Framework.InputControlElement import *
 SLIDER_MODE_SINGLE = 0
@@ -28,6 +28,7 @@ class PreciseButtonSliderElement(ButtonSliderElement):
         raise isinstance(map, (tuple, type(None))) or AssertionError
         raise len(map) == len(self._buttons) or AssertionError
         self._value_map = map
+        return
 
     def send_value(self, value):
         raise self._disabled or value != None or AssertionError
@@ -44,12 +45,14 @@ class PreciseButtonSliderElement(ButtonSliderElement):
                 else:
                     raise False or AssertionError
                 self._last_sent_value = value
+        return
 
     def connect_to(self, parameter):
         ButtonSliderElement.connect_to(self, parameter)
         if self._parameter_to_map_to != None:
             self._last_sent_value = -1
             self._on_parameter_changed()
+        return
 
     def release_parameter(self):
         old_param = self._parameter_to_map_to
@@ -58,11 +61,15 @@ class PreciseButtonSliderElement(ButtonSliderElement):
             for button in self._buttons:
                 button.reset()
 
+        return
+
     def reset(self):
         if not self._disabled and self._buttons != None:
             for button in self._buttons:
                 if button != None:
                     button.reset()
+
+        return
 
     def _send_value_volume(self, value):
         index_to_light = -1
@@ -118,6 +125,7 @@ class PreciseButtonSliderElement(ButtonSliderElement):
                 index_of_sender = (value != 0 or not sender.is_momentary()) and list(self._buttons).index(sender)
                 self._parameter_to_map_to.value = self._parameter_to_map_to != None and self._parameter_to_map_to.is_enabled and self._value_map[index_of_sender]
             self.notify_value(value)
+        return
 
     def _on_parameter_changed(self):
         raise self._parameter_to_map_to != None or AssertionError
@@ -138,3 +146,4 @@ class PreciseButtonSliderElement(ButtonSliderElement):
         else:
             midi_value = int(127 * abs(param_value - self._parameter_to_map_to.min) / param_range)
         self.send_value(midi_value)
+        return

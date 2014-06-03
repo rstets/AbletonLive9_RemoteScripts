@@ -1,9 +1,10 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/ScrollableList.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/ScrollableList.py
 from __future__ import with_statement
 from functools import partial
+from _Framework.Control import ButtonControl, EncoderControl, control_list
 from _Framework.CompoundComponent import CompoundComponent
-from _Framework.Util import in_range, clamp, BooleanContext, index_if
-from _Framework.SubjectSlot import subject_slot, Subject, subject_slot_group
+from _Framework.Util import forward_property, in_range, clamp, BooleanContext, index_if
+from _Framework.SubjectSlot import subject_slot, Subject
 from _Framework import Task, Defaults
 from _Framework.ScrollComponent import ScrollComponent, Scrollable
 import consts
@@ -66,6 +67,7 @@ class ScrollableList(Subject, Scrollable):
         self._pager.scroll_down = self.next_page
         self._pager.can_scroll_up = self.can_scroll_up
         self._pager.can_scroll_down = self.can_scroll_down
+        return
 
     @property
     def pager(self):
@@ -126,6 +128,7 @@ class ScrollableList(Subject, Scrollable):
                 self._offset = clamp(offset, 0, len(self._items))
             self._normalize_offset(index)
             self._do_set_selected_item_index(index)
+        return
 
     def next_page(self):
         if self.can_scroll_down():
@@ -190,6 +193,7 @@ class ScrollableList(Subject, Scrollable):
         self._last_activated_item_index = None
         self.notify_selected_item()
         self.request_notify_item_activated()
+        return
 
     def select_item(self, item):
         self.selected_item_index = item.index
@@ -246,13 +250,13 @@ class ListComponent(CompoundComponent):
     passed, it can handle an ActionList.
     """
     __subject_events__ = ('item_action',)
-    DIRECTION_ON_COLOR = 'List.ScrollerOn'
-    DIRECTION_OFF_COLOR = 'List.ScrollerOff'
     SELECTION_DELAY = 0.5
     ENCODER_FACTOR = 10.0
     empty_list_message = ''
     _current_action_item = None
     _last_action_item = None
+    action_button = ButtonControl(color='Browser.Load')
+    encoders = control_list(EncoderControl)
 
     def __init__(self, scrollable_list = None, data_sources = tuple(), *a, **k):
         super(ListComponent, self).__init__(*a, **k)
@@ -264,6 +268,12 @@ class ListComponent(CompoundComponent):
         self._pager = self.register_component(ScrollComponent())
         self.last_action_item = lambda : self._last_action_item
         self.item_formatter = DefaultItemFormatter()
+        for c in (self._scroller, self._pager):
+            for button in (c.scroll_up_button, c.scroll_down_button):
+                button.color = 'List.ScrollerOn'
+                button.pressed_color = None
+                button.disabled_color = 'List.ScrollerOff'
+
         if scrollable_list == None:
             self.scrollable_list = ActionList(num_visible_items=len(data_sources))
         else:
@@ -274,11 +284,11 @@ class ListComponent(CompoundComponent):
         self._in_encoder_selection = BooleanContext(False)
         self._execute_action_task = self._tasks.add(Task.sequence(Task.delay(1), Task.run(self._execute_action)))
         self._execute_action_task.kill()
+        return
 
     @property
     def _trigger_action_on_scrolling(self):
-        button = self._on_action_button_value.subject
-        return button != None and button.is_pressed()
+        return self.action_button.is_pressed
 
     def _get_scrollable_list(self):
         return self._scrollable_list
@@ -297,6 +307,7 @@ class ListComponent(CompoundComponent):
                 self._scroller.scrollable = ScrollComponent.default_pager
             self._on_selected_item_changed.subject = new_list
             self.update_all()
+        return
 
     scrollable_list = property(_get_scrollable_list, _set_scrollable_list)
 
@@ -306,43 +317,10 @@ class ListComponent(CompoundComponent):
             self._scrollable_list.num_visible_items = len(sources)
         self._update_display()
 
-    def set_encoder_controls(self, encoder_controls):
-        self._on_encoder_value.replace_subjects(encoder_controls)
-
-    def set_selection_buttons(self, prev_button, next_button):
-        self.set_select_prev_button(prev_button)
-        self.set_select_next_button(next_button)
-
-    def _set_scroll_button_colors(self, button):
-        if button:
-            button.set_on_off_values(self.DIRECTION_ON_COLOR, self.DIRECTION_OFF_COLOR)
-
-    def set_select_prev_button(self, prev_button):
-        self._scroller.set_scroll_up_button(prev_button)
-        self._set_scroll_button_colors(prev_button)
-        self._scroller.update()
-
-    def set_select_next_button(self, next_button):
-        self._scroller.set_scroll_down_button(next_button)
-        self._set_scroll_button_colors(next_button)
-        self._scroller.update()
-
-    def set_next_page_button(self, next_button):
-        self._pager.set_scroll_down_button(next_button)
-        self._set_scroll_button_colors(next_button)
-        self._pager.update()
-
-    def set_prev_page_button(self, prev_button):
-        self._pager.set_scroll_up_button(prev_button)
-        self._set_scroll_button_colors(prev_button)
-        self._pager.update()
-
-    def set_action_button(self, button):
-        if button:
-            button.reset()
-            button.set_on_off_values('Browser.Load', 'Browser.LoadNotPossible')
-        self._on_action_button_value.subject = button
-        self._update_action_feedback()
+    select_next_button = forward_property('_scroller')('scroll_down_button')
+    select_prev_button = forward_property('_scroller')('scroll_up_button')
+    next_page_button = forward_property('_pager')('scroll_down_button')
+    prev_page_button = forward_property('_pager')('scroll_up_button')
 
     def on_enabled_changed(self):
         super(ListComponent, self).on_enabled_changed()
@@ -371,8 +349,8 @@ class ListComponent(CompoundComponent):
         if not self._in_encoder_selection:
             self._selected_index_float = float(self._scrollable_list.selected_item_index)
 
-    @subject_slot_group('normalized_value')
-    def _on_encoder_value(self, value, encoder):
+    @encoders.value
+    def encoders(self, value, encoder):
         self._add_offset_to_selected_index(value)
 
     def _add_offset_to_selected_index(self, offset):
@@ -382,20 +360,11 @@ class ListComponent(CompoundComponent):
                     self._selected_index_float = clamp(self._selected_index_float + offset * self.ENCODER_FACTOR, 0, len(self._scrollable_list.items))
                     self._scrollable_list.select_item_index_with_border(int(self._selected_index_float), 1)
 
-    @subject_slot('value')
-    def _on_action_button_value(self, value):
-        if value != 0 and self._current_action_item == None:
+    @action_button.pressed
+    def action_button(self, button):
+        if self._current_action_item == None:
             self._trigger_action(self.next_item if self._action_target_is_next_item() else self.selected_item)
-
-    @subject_slot('value')
-    def _on_next_page(self, value):
-        if value:
-            self._scrollable_list.next_page()
-
-    @subject_slot('value')
-    def _on_prev_page(self, value):
-        if value:
-            self._scrollable_list.prev_page()
+        return
 
     def do_trigger_action(self, item):
         item.action()
@@ -408,6 +377,7 @@ class ListComponent(CompoundComponent):
             self._current_action_item = item
             self.update()
             self._execute_action_task.restart()
+        return
 
     def _execute_action(self):
         """ Is called by the execute action task and should not be called directly
@@ -417,6 +387,7 @@ class ListComponent(CompoundComponent):
             self._last_action_item = self._current_action_item
             self._current_action_item = None
             self.update()
+        return
 
     @property
     def selected_item(self):
@@ -438,15 +409,16 @@ class ListComponent(CompoundComponent):
         return self.selected_item == self.last_action_item() and self._can_be_used_for_action(self.next_item)
 
     def _update_action_feedback(self):
-        if self._on_action_button_value.subject != None:
-            action_light = 'Browser.Loading'
-            if self._current_action_item == None:
-                action_light = 'Browser.LoadNotPossible'
-                if self._action_target_is_next_item():
-                    action_light = 'Browser.LoadNext'
-                elif self._can_be_used_for_action(self.selected_item):
-                    action_light = 'Browser.Load'
-            self._on_action_button_value.subject.set_light(action_light)
+        color = 'Browser.Loading'
+        if self._current_action_item == None:
+            if self._action_target_is_next_item():
+                color = 'Browser.LoadNext'
+            elif self._can_be_used_for_action(self.selected_item):
+                color = 'Browser.Load'
+            else:
+                color = 'Browser.LoadNotPossible'
+        self.action_button.color = color
+        return
 
     def _update_display(self):
         visible_items = self._scrollable_list.visible_items if self._scrollable_list else []
@@ -458,8 +430,10 @@ class ListComponent(CompoundComponent):
 
         if not visible_items and self._data_sources and self.empty_list_message:
             self._data_sources[0].set_display_string(self.empty_list_message)
+        return
 
     def update(self):
+        super(ListComponent, self).update()
         if self.is_enabled():
             self._update_action_feedback()
             self._update_display()

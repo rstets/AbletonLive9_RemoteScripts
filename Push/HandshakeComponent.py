@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/HandshakeComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/HandshakeComponent.py
 """
 Component for handling the initialization process of Push.
 """
@@ -78,14 +78,13 @@ class HandshakeComponent(ControlSurfaceComponent):
         super(HandshakeComponent, self).on_enabled_changed()
         if self._handshake_succeeded == None:
             self._do_fail()
-
-    def update(self):
-        pass
+        return
 
     def _start_handshake(self):
         self._handshake_succeeded = None
         self._identification_timeout_task.restart()
         self._identity_control.enquire_value()
+        return
 
     @subject_slot('value')
     def _on_identity_value(self, value):
@@ -116,9 +115,11 @@ class HandshakeComponent(ControlSurfaceComponent):
             self._handshake_succeeded = True
             self._identification_timeout_task.kill()
             self.notify_success()
+        return
 
     def _do_fail(self, bootloader_mode = False):
         if self._handshake_succeeded == None:
             self._handshake_succeeded = False
             self._identification_timeout_task.kill()
             self.notify_failure(bootloader_mode)
+        return

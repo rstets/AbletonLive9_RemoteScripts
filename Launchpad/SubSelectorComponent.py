@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchpad/SubSelectorComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launchpad/SubSelectorComponent.py
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
@@ -48,6 +48,7 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._update_callback = None
         self._session.set_mixer(self._mixer)
         self.set_modes_buttons(side_buttons[:4])
+        return
 
     def disconnect(self):
         for button in self._modes_buttons:
@@ -64,6 +65,7 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._side_buttons = None
         self._update_callback = None
         ModeSelectorComponent.disconnect(self)
+        return
 
     def set_update_callback(self, callback):
         raise dir(callback).count('im_func') is 1 or AssertionError
@@ -81,6 +83,8 @@ class SubSelectorComponent(ModeSelectorComponent):
                 raise isinstance(button, ButtonElement) or AssertionError
                 self._modes_buttons.append(button)
                 button.add_value_listener(self._mode_value, identify_sender)
+
+        return
 
     def set_mode(self, mode):
         if not isinstance(mode, int):
@@ -123,8 +127,10 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._session.set_stop_track_clip_buttons(None)
         self._mixer.set_global_buttons(None, None, None)
         self._session.set_stop_all_clips_button(None)
+        return
 
     def update(self):
+        super(SubSelectorComponent, self).update()
         if not self._modes_buttons != None:
             raise AssertionError
             if self.is_enabled():
@@ -162,6 +168,7 @@ class SubSelectorComponent(ModeSelectorComponent):
             self._session.set_allow_update(True)
         else:
             self.release_controls()
+        return
 
     def _setup_mixer_overview(self):
         trkon_index = 5
@@ -200,6 +207,7 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._session.set_stop_track_clip_buttons(tuple(stop_buttons))
         self._session.set_stop_all_clips_button(self._side_buttons[0])
         self._mixer.set_global_buttons(self._side_buttons[3], self._side_buttons[2], self._side_buttons[1])
+        return
 
     def _setup_volume_mode(self):
         for track in range(self._matrix.width()):
@@ -220,6 +228,7 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._session.set_stop_track_clip_buttons(None)
         self._session.set_stop_all_clips_button(None)
         self._mixer.set_global_buttons(None, None, None)
+        return
 
     def _setup_pan_mode(self):
         for track in range(self._matrix.width()):
@@ -240,6 +249,7 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._session.set_stop_track_clip_buttons(None)
         self._session.set_stop_all_clips_button(None)
         self._mixer.set_global_buttons(None, None, None)
+        return
 
     def _setup_send1_mode(self):
         for track in range(self._matrix.width()):
@@ -260,6 +270,7 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._session.set_stop_track_clip_buttons(None)
         self._session.set_stop_all_clips_button(None)
         self._mixer.set_global_buttons(None, None, None)
+        return
 
     def _setup_send2_mode(self):
         for track in range(self._matrix.width()):
@@ -280,3 +291,4 @@ class SubSelectorComponent(ModeSelectorComponent):
         self._session.set_stop_track_clip_buttons(None)
         self._session.set_stop_all_clips_button(None)
         self._mixer.set_global_buttons(None, None, None)
+        return

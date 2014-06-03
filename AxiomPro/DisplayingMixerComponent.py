@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/DisplayingMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/DisplayingMixerComponent.py
 from _Framework.ButtonElement import ButtonElement
 from _Framework.MixerComponent import MixerComponent
 from _Framework.PhysicalDisplayElement import PhysicalDisplayElement
@@ -13,12 +13,14 @@ class DisplayingMixerComponent(MixerComponent):
         self._mute_button = None
         self._solo_button = None
         self._register_timer_callback(self._on_timer)
+        return
 
     def disconnect(self):
         self._unregister_timer_callback(self._on_timer)
         self._selected_tracks = None
         MixerComponent.disconnect(self)
         self._display = None
+        return
 
     def set_display(self, display):
         raise isinstance(display, PhysicalDisplayElement) or AssertionError
@@ -34,6 +36,7 @@ class DisplayingMixerComponent(MixerComponent):
                 self._solo_button = button
                 self._solo_button != None and self._solo_button.add_value_listener(self._solo_value)
             self.update()
+        return
 
     def set_mute_button(self, button):
         if not (button == None or isinstance(button, ButtonElement) and button.is_momentary()):
@@ -45,6 +48,7 @@ class DisplayingMixerComponent(MixerComponent):
                 self._mute_button = button
                 self._mute_button != None and self._mute_button.add_value_listener(self._mute_value)
             self.update()
+        return
 
     def _on_timer(self):
         sel_track = None
@@ -82,6 +86,7 @@ class DisplayingMixerComponent(MixerComponent):
                 sel_track.arm = True
                 sel_track.view.select_instrument()
         self._selected_tracks = []
+        return
 
     def _solo_value(self, value):
         if not self._solo_button != None:
@@ -97,6 +102,7 @@ class DisplayingMixerComponent(MixerComponent):
                 self._display.display_message(display_string)
             else:
                 self._display.update()
+        return
 
     def _mute_value(self, value):
         if not self._mute_button != None:
@@ -112,6 +118,7 @@ class DisplayingMixerComponent(MixerComponent):
                 self._display.display_message(display_string)
             else:
                 self._display.update()
+        return
 
     def _next_track_value(self, value):
         MixerComponent._next_track_value(self, value)

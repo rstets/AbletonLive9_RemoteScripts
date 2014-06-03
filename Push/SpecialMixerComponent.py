@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SpecialMixerComponent.py
 from _Framework.SubjectSlot import subject_slot
 from _Framework.MixerComponent import MixerComponent
 from _Framework.DisplayDataSource import DisplayDataSource
@@ -12,7 +12,7 @@ class SpecialMixerComponent(MixerComponent):
     """
     Special mixer class that uses return tracks alongside midi and
     audio tracks.  This provides also a more convenient interface to
-    set controls for the different modes of the L9C.
+    set controls for the different modes of Push.
     """
     num_label_segments = 4
 
@@ -29,6 +29,7 @@ class SpecialMixerComponent(MixerComponent):
         self._selected_track_name_data_source = self._selected_track_data_sources[1]
         self._on_selected_track_changed.subject = self.song().view
         self._update_selected_track_name()
+        return
 
     def tracks_to_use(self):
         return tracks_to_use_from_song(self.song())
@@ -71,17 +72,23 @@ class SpecialMixerComponent(MixerComponent):
                 button.set_on_off_values('Option.Selected', 'Option.Unselected')
             strip.set_select_button(button)
 
+        return
+
     def set_solo_buttons(self, buttons):
         for strip, button in map(None, self._channel_strips, buttons or []):
             if button:
                 button.set_on_off_values('Mixer.SoloOn', 'Mixer.SoloOff')
             strip.set_solo_button(button)
 
+        return
+
     def set_mute_buttons(self, buttons):
         for strip, button in map(None, self._channel_strips, buttons or []):
             if button:
                 button.set_on_off_values('Mixer.MuteOff', 'Mixer.MuteOn')
             strip.set_mute_button(button)
+
+        return
 
     def set_track_names_display(self, display):
         if display:
@@ -100,6 +107,8 @@ class SpecialMixerComponent(MixerComponent):
     def set_volume_controls(self, controls):
         for strip, control in map(None, self._channel_strips, controls or []):
             strip.set_volume_control(control)
+
+        return
 
     def set_pan_send_names_display(self, display):
         self._normalize_pan_send_index()
@@ -126,6 +135,7 @@ class SpecialMixerComponent(MixerComponent):
         else:
             sends = self._pan_send_index - 1
             self.set_send_controls(map(lambda ctl: (None,) * sends + (ctl,), controls or []))
+        return
 
     def set_selected_controls(self, controls):
         strip = self.selected_strip()
@@ -137,6 +147,7 @@ class SpecialMixerComponent(MixerComponent):
             strip.set_volume_control(None)
             strip.set_pan_control(None)
             strip.set_send_controls(tuple())
+        return
 
     def on_track_list_changed(self):
         super(SpecialMixerComponent, self).on_track_list_changed()
@@ -146,9 +157,13 @@ class SpecialMixerComponent(MixerComponent):
         for strip, control in map(None, self._channel_strips, controls or []):
             strip.set_pan_control(control)
 
+        return
+
     def set_send_controls(self, controls):
         for strip, control in map(None, self._channel_strips, controls or []):
             strip.set_send_controls(control)
+
+        return
 
     def _set_parameter_names_display(self, display, parameter):
         if display:
@@ -197,6 +212,8 @@ class SpecialMixerComponent(MixerComponent):
                     self._channel_strips[index + num_empty_tracks].set_track(track)
             else:
                 self._channel_strips[index - num_visible_returns].set_track(None)
+
+        return
 
     @subject_slot('selected_track.name')
     def _on_selected_track_changed(self):

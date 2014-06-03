@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/ViewControlComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/ViewControlComponent.py
 import Live
 NavDirection = Live.Application.Application.View.NavDirection
 from _Framework.CompoundComponent import CompoundComponent
@@ -42,7 +42,10 @@ def next_item(seq, item, delta):
 
 
 def has_next_item(seq, item, delta):
-    return in_range(list(seq).index(item) + delta, 0, len(seq))
+    try:
+        return in_range(list(seq).index(item) + delta, 0, len(seq))
+    except ValueError:
+        return False
 
 
 class TrackScroller(_DeltaSongScroller):
@@ -87,6 +90,7 @@ class SceneScroller(BasicSceneScroller):
                 self._song.view.highlighted_clip_slot.fire(force_legato=True, launch_quantization=Live.Song.Quantization.q_no_q)
             else:
                 self._song.view.selected_track.stop_all_clips(False)
+        return
 
 
 class SceneListScroller(BasicSceneScroller):
@@ -153,6 +157,3 @@ class ViewControlComponent(CompoundComponent):
                 if not app_view.is_view_visible('Detail'):
                     app_view.show_view('Detail')
             app_view.is_view_visible(view) or app_view.focus_view(view)
-
-    def update(self):
-        pass

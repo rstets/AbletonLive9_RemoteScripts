@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/__init__.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/__init__.py
 from Push import Push
 from FirmwareHandling import get_provided_firmware_version
 from _Framework.Capabilities import controller_id, inport, outport, CONTROLLER_ID_KEY, PORTS_KEY, HIDDEN, NOTES_CC, SCRIPT, SYNC, TYPE_KEY, FIRMWARE_KEY, AUTO_LOAD_KEY
@@ -18,5 +18,5 @@ def get_capabilities():
 
 
 def create_instance(c_instance):
-    """ Creates and returns the L9C script """
+    """ Creates and returns the Push script """
     return Push(c_instance)

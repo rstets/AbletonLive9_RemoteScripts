@@ -1,22 +1,22 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/APC20/SliderModesComponent.py
-import Live
-from _Framework.ModeSelectorComponent import ModeSelectorComponent
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/APC20/SliderModesComponent.py
 from _Framework.ButtonElement import ButtonElement
+from _Framework.ModeSelectorComponent import ModeSelectorComponent
 
 class SliderModesComponent(ModeSelectorComponent):
     """ SelectorComponent that assigns sliders to different functions """
 
-    def __init__(self, mixer, sliders):
+    def __init__(self, mixer, sliders, *a, **k):
         raise len(sliders) == 8 or AssertionError
-        ModeSelectorComponent.__init__(self)
+        super(SliderModesComponent, self).__init__(*a, **k)
         self._mixer = mixer
         self._sliders = sliders
         self._mode_index = 0
 
     def disconnect(self):
-        ModeSelectorComponent.disconnect(self)
+        super(SliderModesComponent, self).disconnect()
         self._mixer = None
         self._sliders = None
+        return
 
     def set_mode_buttons(self, buttons):
         raise isinstance(buttons, (tuple, type(None))) or AssertionError
@@ -32,11 +32,13 @@ class SliderModesComponent(ModeSelectorComponent):
                 self._modes_buttons.append(button)
 
         self.update()
+        return
 
     def number_of_modes(self):
         return 8
 
     def update(self):
+        super(SliderModesComponent, self).update()
         if not (self.is_enabled() and self._mode_index in range(self.number_of_modes())):
             raise AssertionError
             for index in range(len(self._modes_buttons)):
@@ -62,3 +64,5 @@ class SliderModesComponent(ModeSelectorComponent):
                     send_controls = [None, None, None]
                     send_controls[self._mode_index - 2] = slider
                     strip.set_send_controls(tuple(send_controls))
+
+        return

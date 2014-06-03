@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/re.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/re.py
 r"""Support for regular expressions (RE).
 
 This module provides regular expression matching operations similar to
@@ -291,6 +291,7 @@ class Scanner:
         p = sre_parse.SubPattern(s, [(BRANCH, (None, p))])
         s.groups = len(p)
         self.scanner = sre_compile.compile(p)
+        return
 
     def scan(self, string):
         result = []

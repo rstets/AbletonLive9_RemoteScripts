@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Oxygen_3rd_Gen/Oxygen_3rd_Gen.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Oxygen_3rd_Gen/Oxygen_3rd_Gen.py
 from __future__ import with_statement
 import Live
 from _Framework.ControlSurface import ControlSurface
@@ -58,11 +58,13 @@ class Oxygen_3rd_Gen(ControlSurface):
             transport.set_record_button(ButtonElement(is_momentary, MIDI_CC_TYPE, GLOBAL_CHANNEL, 118))
             session = SessionComponent(0, 0)
             transport_view_modes = TransportViewModeSelector(transport, session, ffwd_button, rwd_button, loop_button)
+        return
 
     def disconnect(self):
         self._shift_button.remove_value_listener(self._shift_value)
         self._shift_button = None
         ControlSurface.disconnect(self)
+        return
 
     def refresh_state(self):
         ControlSurface.refresh_state(self)
@@ -73,6 +75,7 @@ class Oxygen_3rd_Gen(ControlSurface):
             if midi_bytes[10] == 38:
                 self._mixer.master_strip().set_volume_control(None)
                 self._mixer.selected_strip().set_volume_control(self._master_slider)
+        return
 
     def _shift_value(self, value):
         raise value in range(128) or AssertionError
@@ -87,3 +90,5 @@ class Oxygen_3rd_Gen(ControlSurface):
                 self._mixer.channel_strip(index).set_solo_button(self._mute_solo_buttons[index])
                 self._mixer.set_select_buttons(None, None)
                 self._mixer.set_bank_buttons(self._track_up_button, self._track_down_button)
+
+        return

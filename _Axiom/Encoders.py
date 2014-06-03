@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Axiom/Encoders.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Axiom/Encoders.py
 import Live
 from consts import *
 from _Generic.Devices import *
@@ -14,11 +14,13 @@ class Encoders:
         self.__modifier = False
         self.__device_locked = False
         self.__show_bank = False
+        return
 
     def disconnect(self):
         if self.__selected_device != None:
             self.__selected_device.remove_parameters_listener(self.__on_device_parameters_changed)
             self.__selected_device = None
+        return
 
     def build_midi_map(self, script_handle, midi_map_handle):
         tracks = self.__parent.song().visible_tracks
@@ -96,6 +98,8 @@ class Encoders:
                     else:
                         break
 
+        return
+
     def receive_midi_cc(self, cc_no, cc_value, channel):
         pass
 
@@ -148,6 +152,7 @@ class Encoders:
         self.__show_bank = False
         self.__selected_device = device
         self.__parent.request_rebuild_midi_map()
+        return
 
     def __on_device_parameters_changed(self):
         self.__parent.request_rebuild_midi_map()

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/copy_reg.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Tools/copy_reg.py
 """Helper to provide extensibility for pickle/cPickle.
 
 This is only useful to add pickle support for extension types defined in
@@ -20,6 +20,7 @@ def pickle(ob_type, pickle_function, constructor_ob = None):
     dispatch_table[ob_type] = pickle_function
     if constructor_ob is not None:
         constructor(constructor_ob)
+    return
 
 
 def constructor(object):
@@ -82,6 +83,7 @@ def _reduce_ex(self, proto):
         return dict and (_reconstructor, args, dict)
     else:
         return (_reconstructor, args)
+    return
 
 
 def __newobj__(cls, *args):

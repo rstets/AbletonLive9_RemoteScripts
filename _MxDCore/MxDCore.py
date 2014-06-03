@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_MxDCore/MxDCore.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_MxDCore/MxDCore.py
 import Live.Base
 from functools import partial
 import _Framework
@@ -68,6 +68,7 @@ class MxDCore(object):
         self.lom_classes += LomIntrospection(Live, exclude=excluded).lom_classes
         self.lom_classes += LomIntrospection(_Framework).lom_classes
         self.appointed_lom_ids = {0: None}
+        return
 
     def disconnect(self):
         for dev_id in self.device_contexts.keys():
@@ -80,6 +81,7 @@ class MxDCore(object):
         self.manager = None
         del self.appointed_lom_ids
         del self.lom_classes
+        return
 
     def set_manager(self, manager):
         self.manager = manager
@@ -159,6 +161,7 @@ class MxDCore(object):
                 self.device_contexts[device_id][object_id][TYPE_KEY] = type
         else:
             self.device_contexts[device_id][object_id][TYPE_KEY] = type
+        return
 
     def _get_current_type(self, device_id, object_id):
         """get the CURRENT_TYPE of obj/obs/rmt objects"""
@@ -197,6 +200,7 @@ class MxDCore(object):
              PATH_LISTENER_KEY: {},
              OPEN_OPERATIONS_KEY: {},
              LAST_SENT_ID_KEY: None}
+        return
 
     def release_device_context(self, device_id, object_id, parameters):
         device_context = self.device_contexts[device_id]
@@ -222,6 +226,7 @@ class MxDCore(object):
         if found_cs_references:
             TupleWrapper.forget_tuple_wrapper_instances()
             self.appointed_lom_ids = {0: None}
+        return
 
     def path_set_path(self, device_id, object_id, parameters):
         if not isinstance(parameters, (str, unicode)):
@@ -305,6 +310,7 @@ class MxDCore(object):
             self.manager.send_message(device_id, object_id, 'path_count', concatenate_strings((parameters, count)))
         else:
             self._raise(device_id, object_id, 'getcount: invalid property name')
+        return
 
     def obj_set_id(self, device_id, object_id, parameter):
         if self._is_integer(parameter) and self._lom_id_exists(device_id, int(parameter)):
@@ -322,6 +328,7 @@ class MxDCore(object):
             self._raise(device_id, object_id, 'get path: error calculating the path')
         else:
             self.manager.send_message(device_id, object_id, 'obj_path', unicode(path).strip())
+        return
 
     def obj_get_type(self, device_id, object_id, parameters):
         current_object = self._get_current_lom_object(device_id, object_id)
@@ -330,6 +337,7 @@ class MxDCore(object):
             current_object = self._disambiguate_object(current_object)
             object_type = current_object.__class__.__name__
         self.manager.send_message(device_id, object_id, 'obj_type', unicode(object_type))
+        return
 
     def obj_get_info(self, device_id, object_id, parameters):
         current_object = self._get_current_lom_object(device_id, object_id)
@@ -353,6 +361,7 @@ class MxDCore(object):
                 object_info += accumulate_info(lom_info.lists_of_children, 'children') + accumulate_info(lom_info.children, 'child') + accumulate_info(lom_info.properties, 'property') + accumulate_info(lom_info.functions, 'function')
             object_info += 'done'
         self.manager.send_message(device_id, object_id, 'obj_info', unicode(object_info))
+        return
 
     def obj_set_val(self, device_id, object_id, parameters):
         self.obj_set(device_id, object_id, parameters)
@@ -398,6 +407,8 @@ class MxDCore(object):
             except LomAttributeError as e:
                 self._raise(device_id, object_id, e.message)
 
+        return
+
     def obj_get_val(self, device_id, object_id, parameters):
         self.obj_get(device_id, object_id, parameters)
 
@@ -423,6 +434,7 @@ class MxDCore(object):
 
         else:
             self._warn(device_id, object_id, 'get: no valid object set')
+        return
 
     def obj_call(self, device_id, object_id, parameters):
         raise isinstance(parameters, (str, unicode)) or AssertionError
@@ -443,6 +455,7 @@ class MxDCore(object):
 
         else:
             self._warn(device_id, object_id, u'call %s: no valid object set' % parameters)
+        return
 
     def obs_set_id(self, device_id, object_id, parameter):
         if self._is_integer(parameter) and self._lom_id_exists(device_id, int(parameter)):
@@ -450,6 +463,7 @@ class MxDCore(object):
             self._set_current_lom_id(device_id, object_id, int(parameter), 'obs')
         else:
             self._raise(device_id, object_id, 'set id: invalid id')
+        return
 
     def obs_get_id(self, device_id, object_id, parameter):
         self.manager.send_message(device_id, object_id, 'obs_id', unicode(self._get_current_lom_id(device_id, object_id)))
@@ -471,6 +485,7 @@ class MxDCore(object):
             else:
                 self._warn(device_id, object_id, 'gettype: no property with the name ' + property_name)
         self.manager.send_message(device_id, object_id, 'obs_type', unicode(result))
+        return
 
     def obs_bang(self, device_id, object_id, parameter):
         self._observer_property_callback(device_id, object_id)
@@ -485,6 +500,7 @@ class MxDCore(object):
                 self._raise(device_id, object_id, 'set id: only accepts objects of type DeviceParameter')
         else:
             self._raise(device_id, object_id, 'set id: invalid id')
+        return
 
     def _object_attr_path_iter(self, device_id, object_id, path_components):
         """Returns a generator of (object, attribute) tuples along the given path.
@@ -509,6 +525,8 @@ class MxDCore(object):
                     cur_object = getattr(cur_object, component)
                 except Exception:
                     return
+
+        return
 
     def _object_from_path(self, device_id, object_id, path_components, must_exist):
         lom_object = None
@@ -563,6 +581,7 @@ class MxDCore(object):
                 new_listeners[lom_object, attribute] = listener
 
         object_context[PATH_LISTENER_KEY] = new_listeners
+        return
 
     def _uninstall_path_listeners(self, device_id, object_id):
         device_context = self.device_contexts[device_id]
@@ -571,6 +590,8 @@ class MxDCore(object):
         for (lom_object, attribute), listener in old_listeners.iteritems():
             if lom_object != None and getattr(lom_object, attribute + '_has_listener')(listener):
                 getattr(lom_object, 'remove_%s_listener' % attribute)(listener)
+
+        return
 
     def _path_listener_callback(self, device_id, object_id):
         device_context = self.device_contexts[device_id]
@@ -751,6 +772,7 @@ class MxDCore(object):
                     listener_callback()
                 elif hasattr(current_object, transl_prop_name):
                     self._warn(device_id, object_id, 'property cannot be listened to')
+        return
 
     def _observer_uninstall_listener(self, device_id, object_id):
         device_context = self.device_contexts[device_id]
@@ -765,6 +787,7 @@ class MxDCore(object):
             if getattr(current_object, transl_prop_name + '_has_listener')(listener_callback):
                 getattr(current_object, 'remove_%s_listener' % transl_prop_name)(listener_callback)
         object_context[PROP_LISTENER_KEY] = (None, None, None)
+        return
 
     def _observer_property_message_type(self, prop):
         prop_type = None
@@ -802,6 +825,7 @@ class MxDCore(object):
                 self.manager.send_message(device_id, object_id, 'obs_string_val', 'bang')
             else:
                 self._warn(device_id, object_id, 'property should be listenable')
+        return
 
     def _observer_id_callback(self, device_id, object_id):
         if not self._get_current_property(device_id, object_id) == u'id':
@@ -813,6 +837,7 @@ class MxDCore(object):
             current_id = 0 if current_object == None else self._get_current_lom_id(device_id, object_id)
             object_context[LAST_SENT_ID_KEY] = current_id != object_context[LAST_SENT_ID_KEY] and current_id
             self.manager.send_message(device_id, object_id, 'obs_id_val', unicode(current_id))
+        return
 
     def update_remote_timeable(self, device_id, object_id):
         self.update_device_context(device_id, object_id)

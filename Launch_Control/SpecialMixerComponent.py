@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/SpecialMixerComponent.py
 from _Framework.MixerComponent import MixerComponent
 from _Framework.ModesComponent import ModesComponent, LayerMode, LatchingBehaviour
 from _Framework.SubjectSlot import subject_slot
@@ -32,6 +32,7 @@ class SpecialMixerComponent(MixerComponent):
         self._modes.layer = mode_layer
         self._on_visible_tracks.subject = self.song()
         self._on_selected_mixer_mode.subject = self._modes
+        return
 
     def _get_selected_send_index(self):
         return self._selected_send_index
@@ -49,10 +50,14 @@ class SpecialMixerComponent(MixerComponent):
             if channel_strip:
                 channel_strip.set_pan_control(control)
 
+        return
+
     def set_volume_controls(self, controls):
         for control, channel_strip in map(None, controls or [], self._channel_strips):
             if channel_strip:
                 channel_strip.set_volume_control(control)
+
+        return
 
     def set_sends_controls(self, controls):
         self._send_controls = controls
@@ -77,6 +82,8 @@ class SpecialMixerComponent(MixerComponent):
             skipped_sends = [ None for _ in xrange(self._selected_send_index) ]
             channel_strip.set_send_controls(skipped_sends + send_controls)
 
+        return
+
     @subject_slot('visible_tracks')
     def _on_visible_tracks(self):
         self._clamp_send_index()
@@ -85,6 +92,3 @@ class SpecialMixerComponent(MixerComponent):
     @subject_slot('selected_mode')
     def _on_selected_mixer_mode(self, mode):
         self.notify_selected_mixer_mode(mode)
-
-    def update(self):
-        pass

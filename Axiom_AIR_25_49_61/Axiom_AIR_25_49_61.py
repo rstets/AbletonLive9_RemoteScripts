@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/Axiom_AIR_25_49_61.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_AIR_25_49_61/Axiom_AIR_25_49_61.py
 from __future__ import with_statement
 import Live
 from Live import MidiMap
@@ -77,6 +77,8 @@ class Axiom_AIR_25_49_61(ControlSurface):
             for component in self.components:
                 component.set_enabled(False)
 
+        return
+
     def disconnect(self):
         self._scheduled_messages = []
         for encoder in self._encoders:
@@ -149,6 +151,7 @@ class Axiom_AIR_25_49_61(ControlSurface):
         self._session = None
         ControlSurface.disconnect(self)
         self._send_midi(SYSEX_START + DISABLE_HYPERCONTROL)
+        return
 
     def refresh_state(self):
         ControlSurface.refresh_state(self)
@@ -190,12 +193,14 @@ class Axiom_AIR_25_49_61(ControlSurface):
         ControlSurface.restore_bank(self, bank_index)
         if self._alt_device_component != None:
             self._alt_device_component.restore_bank(bank_index)
+        return
 
     def set_appointed_device(self, device):
         ControlSurface.set_appointed_device(self, device)
         with self.component_guard():
             if self._alt_device_component != None:
                 self._alt_device_component.set_device(device)
+        return
 
     def set_alt_device_component(self, device_component):
         self._alt_device_component = device_component
@@ -210,6 +215,7 @@ class Axiom_AIR_25_49_61(ControlSurface):
         self._device_component.set_device(device_to_select)
         if self._alt_device_component != None:
             self._alt_device_component.set_device(device_to_select)
+        return
 
     def _setup_controls(self):
         self._left_button = create_button(99, 'Left_Button')
@@ -312,12 +318,11 @@ class Axiom_AIR_25_49_61(ControlSurface):
         self._mixer_for_faders.name = 'Mixer_for_faders'
 
     def _setup_session(self):
-        self._session = SpecialSessionComponent(0, 0)
+        self._session = SpecialSessionComponent(8, 0)
         self._session.name = 'Session_Control'
         self._session.selected_scene().name = 'Selected_Scene'
         self._session.set_mixer(self._mixer_for_encoders)
         self._session.set_alt_mixer(self._mixer_for_faders)
-        self._session.set_track_banking_increment(8)
         self._session.add_offset_listener(self._update_bank_value)
 
     def _setup_transport(self):
@@ -507,6 +512,7 @@ class Axiom_AIR_25_49_61(ControlSurface):
             self.schedule_message(1, self._set_value_string)
         self._set_name_string(name_string)
         self._set_value_string(value_string)
+        return
 
     def _encoder_value(self, value, sender):
         param = sender.mapped_parameter()
@@ -534,6 +540,7 @@ class Axiom_AIR_25_49_61(ControlSurface):
             self.schedule_message(1, self._set_value_string)
         self._set_name_string(name_string)
         self._set_value_string(value_string)
+        return
 
     def _set_displays_to_default(self):
         self._name_display.segment(0).set_data_source(self._mixer_for_encoders.selected_strip().track_name_data_source())
@@ -541,6 +548,7 @@ class Axiom_AIR_25_49_61(ControlSurface):
         self._update_bank_value()
         self._set_value_string(None)
         self._send_midi(SYSEX_START + LCD_HC_DEFAULT)
+        return
 
     def _set_name_string(self, name_string):
         self._name_display.segment(0).set_data_source(self._name_display_data_source)
@@ -552,15 +560,17 @@ class Axiom_AIR_25_49_61(ControlSurface):
             self._value_display_data_source.set_display_string(value_string)
         else:
             self._value_display.reset()
+        return
 
     def _set_bank_string(self, bank_string = None):
         if bank_string != None:
             self._bank_display_data_source.set_display_string(bank_string)
         else:
             self._bank_display.reset()
+        return
 
     def _update_bank_value(self):
-        bank = (self._session.track_offset() + 1) / self._session.track_banking_increment() + 1
+        bank = (self._session.track_offset() + 1) / self._session.width() + 1
         self._set_bank_string(str(bank))
 
     def _install_mapping(self, midi_map_handle, control, parameter, feedback_delay, feedback_map):

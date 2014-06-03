@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/KeyPad/CuePointControlComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/KeyPad/CuePointControlComponent.py
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.SubjectSlot import subject_slot
 
@@ -11,9 +11,6 @@ class CuePointControlComponent(ControlSurfaceComponent):
         super(CuePointControlComponent, self).__init__(*a, **k)
         self._on_can_jump_to_prev_cue_changed.subject = self.song()
         self._on_can_jump_to_next_cue_changed.subject = self.song()
-
-    def update(self):
-        pass
 
     def set_toggle_cue_button(self, button):
         self._toggle_cue_button = button
@@ -33,6 +30,7 @@ class CuePointControlComponent(ControlSurfaceComponent):
     def _on_can_jump_to_prev_cue_changed(self):
         if self._prev_cue_button != None:
             self._prev_cue_button.set_light(self.song().can_jump_to_prev_cue)
+        return
 
     @subject_slot('value')
     def _on_jump_to_prev_cue(self, value):
@@ -49,6 +47,7 @@ class CuePointControlComponent(ControlSurfaceComponent):
     def _on_can_jump_to_next_cue_changed(self):
         if self._next_cue_button != None:
             self._next_cue_button.set_light(self.song().can_jump_to_next_cue)
+        return
 
     @subject_slot('value')
     def _on_jump_to_next_cue(self, value):

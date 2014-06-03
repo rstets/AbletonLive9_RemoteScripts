@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_DirectLink/BestBankDeviceComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Axiom_DirectLink/BestBankDeviceComponent.py
 import Live
 from _Framework.DeviceComponent import DeviceComponent
 from _Framework.DisplayDataSource import DisplayDataSource
@@ -30,6 +30,7 @@ class BestBankDeviceComponent(DeviceComponent):
     def disconnect(self):
         self._bank_name_data_source = None
         DeviceComponent.disconnect(self)
+        return
 
     def bank_name_data_source(self):
         return self._bank_name_data_source
@@ -50,6 +51,7 @@ class BestBankDeviceComponent(DeviceComponent):
                 if bank_name in (BOP_BANK_NAME, 'Bank 1'):
                     bank_name = 'Home'
             self._bank_name_data_source.set_display_string(bank_name)
+        return
 
     def _is_banking_enabled(self):
         return True

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SlideComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SlideComponent.py
 """
 Component that navigates a series of pages.
 """
@@ -114,6 +114,7 @@ class SlideComponent(CompoundComponent, Scrollable):
         return self.can_scroll_page_down()
 
     def update(self):
+        super(SlideComponent, self).update()
         self._touch_strip_array = []
         self._update_touch_strips()
 

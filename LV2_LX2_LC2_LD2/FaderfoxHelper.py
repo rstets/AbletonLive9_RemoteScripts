@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/LV2_LX2_LC2_LD2/FaderfoxHelper.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/LV2_LX2_LC2_LD2/FaderfoxHelper.py
 import Live
 from ParamMap import Callable
 from Devices import *
@@ -50,6 +50,7 @@ class FaderfoxHelper:
                 else:
                     self.stop_track(track_idx)
                     return 0
+        return None
 
     def stop_track(self, track_idx):
         if track_idx < len(self.song().tracks):
@@ -175,6 +176,7 @@ class FaderfoxHelper:
              None,
              None,
              None]
+        return None
 
     def device_is_plugin(self, device):
         return self.device_name(device) in ('AuPluginDevice', 'PluginDevice')
@@ -219,3 +221,5 @@ class FaderfoxHelper:
                     name = FIVETOSIX_PARAMS_DICT[device_name][name]
                 if i.name == name:
                     return i
+
+        return None

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SpecialChanStripComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/SpecialChanStripComponent.py
 from _Framework.Util import flatten
 from _Framework import Task
 from _Framework.SubjectSlot import subject_slot, subject_slot_group
@@ -46,6 +46,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
         self._cue_volume_slot = self.register_disconnectable(ParameterSlot())
         self._track_state = self.register_disconnectable(TrackArmState())
         self._on_arm_state_changed.subject = self._track_state
+        return
 
     def set_delete_handler(self, delete_handler):
         self._delete_handler = delete_handler
@@ -54,11 +55,13 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
         if control != None:
             control.mapping_sensitivity = consts.CONTINUOUS_MAPPING_SENSITIVITY
         super(SpecialChanStripComponent, self).set_volume_control(control)
+        return
 
     def set_pan_control(self, control):
         if control != None:
             control.mapping_sensitivity = consts.CONTINUOUS_MAPPING_SENSITIVITY
         super(SpecialChanStripComponent, self).set_pan_control(control)
+        return
 
     def set_send_controls(self, controls):
         if controls != None:
@@ -67,11 +70,13 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
                     control.mapping_sensitivity = consts.CONTINUOUS_MAPPING_SENSITIVITY
 
         super(SpecialChanStripComponent, self).set_send_controls(controls)
+        return
 
     def set_cue_volume_control(self, control):
         if control != None:
             control.mapping_sensitivity = consts.CONTINUOUS_MAPPING_SENSITIVITY
         self._cue_volume_slot.control = control
+        return
 
     def set_duplicate_button(self, duplicate_button):
         self._duplicate_button = duplicate_button
@@ -131,6 +136,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
                 self._select_button.turn_on()
             else:
                 self._select_button.turn_off()
+        return
 
     def _update_track_listeners(self):
         mixer = self._track.mixer_device if self._track else None
@@ -140,6 +146,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
         self._on_volume_value_changed.subject = mixer and mixer.volume
         self._on_panning_value_changed.subject = mixer and mixer.panning
         self._on_sends_value_changed.replace_subjects(sends)
+        return
 
     def _update_parameter_name_sources(self):
         num_params = self._track and len(self._track.mixer_device.sends) + 2
@@ -157,6 +164,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
                 self._track_name_data_source.set_display_string(prefix + self._track.name)
             else:
                 self._track_name_data_source.set_display_string(' ')
+        return
 
     @property
     def _is_deleting(self):
@@ -180,6 +188,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
                     self._delete_handler.delete_clip_envelope(self._track.mixer_device.track_activator)
                 else:
                     super(SpecialChanStripComponent, self)._mute_value(value)
+        return
 
     def _do_toggle_arm(self, exclusive = False):
         if self._track.can_be_armed:
@@ -228,6 +237,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
     def _do_fold_track(self):
         if self.is_enabled() and self._track != None and self._track.is_foldable:
             self._track.fold_state = not self._track.fold_state
+        return
 
     @subject_slot('value')
     def _on_volume_value_changed(self):
@@ -237,6 +247,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
             graph = self._track_parameter_graphic_sources[0]
             text.set_display_string(str(param))
             graph.set_display_string(param_value_to_graphic(param, consts.GRAPH_VOL))
+        return
 
     @subject_slot('value')
     def _on_panning_value_changed(self):
@@ -246,6 +257,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
             graph = self._track_parameter_graphic_sources[1]
             text.set_display_string(str(param))
             graph.set_display_string(param_value_to_graphic(param, consts.GRAPH_PAN))
+        return
 
     @subject_slot_group('value')
     def _on_sends_value_changed(self, send):
@@ -255,6 +267,7 @@ class SpecialChanStripComponent(ChannelStripComponent, Messenger):
             graph = self._track_parameter_graphic_sources[index]
             text.set_display_string(str(send))
             graph.set_display_string(param_value_to_graphic(send, consts.GRAPH_VOL))
+        return
 
     def _update_parameter_values(self):
         for source in flatten(zip(self._track_parameter_data_sources, self._track_parameter_graphic_sources)):

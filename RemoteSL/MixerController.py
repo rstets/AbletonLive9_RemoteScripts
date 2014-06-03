@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/RemoteSL/MixerController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/RemoteSL/MixerController.py
 import Live
 from RemoteSLComponent import RemoteSLComponent
 from consts import *
@@ -44,6 +44,8 @@ class MixerController(RemoteSLComponent):
         for track in self.__assigned_tracks:
             if track and track.name_has_listener(self.__on_track_name_changed):
                 track.remove_name_listener(self.__on_track_name_changed)
+
+        return
 
     def remote_sl_parent(self):
         return self.__parent
@@ -139,6 +141,7 @@ class MixerController(RemoteSLComponent):
                 page_down_value = CC_VAL_BUTTON_PRESSED
             self.send_midi((self.cc_status_byte(), MX_DISPLAY_PAGE_UP, page_up_value))
             self.send_midi((self.cc_status_byte(), MX_DISPLAY_PAGE_DOWN, page_down_value))
+        return
 
     def __handle_page_up_down_ccs(self, cc_no, cc_value):
         all_tracks = tuple(self.song().visible_tracks) + tuple(self.song().return_tracks) + (self.song().master_track,)
@@ -304,6 +307,7 @@ class MixerChannelStrip():
         self.__index = index
         self.__assigned_track = None
         self.__control_second_button = True
+        return
 
     def song(self):
         return self.__mixer_controller.song()
@@ -325,6 +329,7 @@ class MixerChannelStrip():
                 self.__assigned_track.add_arm_listener(self._on_arm_changed)
         self._on_mute_changed()
         self._on_arm_changed()
+        return
 
     def slider_parameter(self):
         slider_mode = self.__mixer_controller.slider_mode()
@@ -341,9 +346,11 @@ class MixerChannelStrip():
                     return None
         else:
             return None
+        return None
 
     def slider_moved(self, cc_value):
         raise self.__assigned_track == None or self.slider_parameter() == None or AssertionError, 'should only be reached when the slider was not realtime mapped '
+        return
 
     def take_control_of_second_button(self, take_control):
         if self.__mixer_controller.support_mkII():

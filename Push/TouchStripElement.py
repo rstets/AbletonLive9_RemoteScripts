@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/TouchStripElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/TouchStripElement.py
 import Live
 import Sysex
 from _Framework.Util import group, in_range, nop, NamedTuple, clamp
@@ -109,6 +109,7 @@ class TouchStripElement(InputControlElement, SlotManager):
         self._touch_slot = self.register_slot(touch_button, None, 'value')
         self._behaviour = None
         self.behaviour = None
+        return
 
     @property
     def touch_button(self):
@@ -138,6 +139,7 @@ class TouchStripElement(InputControlElement, SlotManager):
 
     def reset(self):
         self.behaviour = None
+        return
 
     def notify_value(self, value):
         notify = super(TouchStripElement, self).notify_value

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/MixerOrDeviceModeSelector.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/AxiomPro/MixerOrDeviceModeSelector.py
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.DisplayDataSource import DisplayDataSource
@@ -37,6 +37,7 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
             encoder.add_value_listener(self._parameter_value, identify_sender)
 
         self.set_mode(0)
+        return
 
     def disconnect(self):
         self._unregister_timer_callback(self._on_timer)
@@ -51,6 +52,7 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
         self._device_dummy_source = None
         self._parameter_source = None
         ModeSelectorComponent.disconnect(self)
+        return
 
     def set_displays(self, encoders_display, value_display, device_display, page_displays):
         if not isinstance(encoders_display, PhysicalDisplayElement):
@@ -64,6 +66,7 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
             self._page_displays = page_displays
             self._value_display != None and self._value_display.segment(0).set_data_source(self._parameter_source)
         self.update()
+        return
 
     def set_peek_button(self, button):
         if not (button == None or isinstance(button, ButtonElement)):
@@ -74,11 +77,13 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
                 self._peek_button = button
                 self._peek_button != None and self._peek_button.add_value_listener(self._peek_value)
             self.update()
+        return
 
     def number_of_modes(self):
         return 2
 
     def update(self):
+        super(MixerOrDeviceModeSelector, self).update()
         if self.is_enabled():
             if self._mode_index == 0:
                 self._device.set_parameter_controls(None)
@@ -119,6 +124,7 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
             else:
                 print 'Invalid mode index'
                 raise False or AssertionError
+        return
 
     def _parameter_value(self, value, control):
         if not control in self._encoders:
@@ -129,6 +135,7 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
             else:
                 self._parameter_source.set_display_string('<unmapped>')
             self._clean_value_display_in = 20
+        return
 
     def _on_timer(self):
         if self._clean_value_display_in > 0:
@@ -152,3 +159,4 @@ class MixerOrDeviceModeSelector(ModeSelectorComponent):
                     peek_changed = True
 
             self._must_update_encoder_display = peek_changed and self._encoders_display != None and True
+        return

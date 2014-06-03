@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/MelodicComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/MelodicComponent.py
 from __future__ import with_statement
 from _Framework.Util import forward_property, find_if
 from _Framework.SubjectSlot import subject_slot
@@ -43,6 +43,7 @@ class MelodicComponent(ModesComponent, Messenger):
         self._skin = skin
         self._playhead_color = 'Melodic.Playhead'
         self._update_playhead_color()
+        return
 
     scales_menu = forward_property('_instrument')('scales_menu')
     scales = forward_property('_instrument')('scales')
@@ -60,6 +61,9 @@ class MelodicComponent(ModesComponent, Messenger):
     def set_short_loop_selector_matrix(self, matrix):
         pass
 
+    next_loop_page_button = forward_property('_loop_selector')('next_page_button')
+    prev_loop_page_button = forward_property('_loop_selector')('prev_page_button')
+
     def set_note_editor_matrices(self, matrices):
         raise not matrices or len(matrices) <= NUM_NOTE_EDITORS or AssertionError
         self._matrices = matrices
@@ -68,6 +72,7 @@ class MelodicComponent(ModesComponent, Messenger):
                 editor.set_button_matrix(matrix)
 
         self._update_matrix_channels_for_playhead()
+        return
 
     def _get_playhead_color(self):
         self._playhead_color
@@ -89,6 +94,7 @@ class MelodicComponent(ModesComponent, Messenger):
             self._loop_selector.set_detail_clip(clip)
             self._playhead_component.set_clip(clip)
             self._instrument.set_detail_clip(clip)
+        return
 
     def _set_full_velocity(self, enable):
         for note_editor in self._note_editors:
@@ -145,11 +151,14 @@ class MelodicComponent(ModesComponent, Messenger):
                                 button.set_identifier(button._original_identifier)
                                 button.set_channel(NON_FEEDBACK_CHANNEL)
 
+        return
+
     def _update_playhead_color(self):
         if self.is_enabled() and self._skin and self._playhead:
             self._playhead.velocity = int(self._skin[self._playhead_color])
 
     def update(self):
+        super(MelodicComponent, self).update()
         self._on_detail_clip_changed()
         self._update_playhead_color()
 
@@ -168,3 +177,4 @@ class MelodicComponent(ModesComponent, Messenger):
                 start_note = self._instrument._pattern.note(0, 0).index
                 end_note = self._instrument._pattern.note(7, 7).index
             self.show_notification(message % (pitch_index_to_string(start_note), pitch_index_to_string(end_note)))
+        return

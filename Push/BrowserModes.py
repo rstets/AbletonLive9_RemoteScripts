@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/BrowserModes.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/BrowserModes.py
 """
 Different mode objects that turn live into different browsing modes.
 """
@@ -34,6 +34,7 @@ class BrowserHotswapMode(Mode):
 
     def leave_mode(self):
         self._application.browser.hotswap_target = None
+        return
 
     def _set_hotswap_target(self, hotswap_object):
         self._application.browser.hotswap_target = hotswap_object
@@ -53,6 +54,7 @@ class BrowserAddEffectMode(Mode):
         self._selection_for_insert = None
         if insert_left is not None:
             self.insert_left = insert_left
+        return
 
     def enter_mode(self):
         self._track_to_add_effect = self._selection.selected_track
@@ -61,6 +63,7 @@ class BrowserAddEffectMode(Mode):
         self._browser.filter_type = self.get_filter_type()
         if self._application_view.browse_mode:
             self._browser.hotswap_target = None
+        return
 
     def leave_mode(self):
         disabled = Live.Track.DeviceInsertMode.default
@@ -99,6 +102,7 @@ class BrowserAddEffectMode(Mode):
         else:
             right = chain.devices[index + 1] if index < chain_len - 1 else None
             return filter_type_between(selected, right, midi_support, is_drum_pad, supports_instrument)
+        return
 
 
 def filter_type_between(left, right, supports_midi = False, is_drum_pad = False, supports_instrument = False):

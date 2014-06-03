@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/GridResolution.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/GridResolution.py
 import Live
 GridQuantization = Live.Clip.GridQuantization
 from _Framework.SubjectSlot import subject_slot, SlotManager, Subject
@@ -79,6 +79,8 @@ class GridResolution(SlotManager, Subject):
                     button.turn_on()
                 else:
                     button.turn_off()
+
+        return
 
     def update(self):
         self._update_quantization_buttons()

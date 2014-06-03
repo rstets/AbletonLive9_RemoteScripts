@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/DeviceParameterComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/DeviceParameterComponent.py
 from itertools import chain, repeat
 import Live
 AutomationState = Live.DeviceParameter.AutomationState
@@ -147,6 +147,8 @@ class DeviceParameterComponent(ControlSurfaceComponent):
                     name = consts.CHAR_FULL_BLOCK + name
                 name_data_source.set_display_string(name or '')
 
+        return None
+
     def _update_parameter_values(self):
         if self.is_enabled():
             for parameter, data_source in map(None, self.parameters, self._parameter_value_data_sources):
@@ -161,6 +163,8 @@ class DeviceParameterComponent(ControlSurfaceComponent):
                 if data_source:
                     data_source.set_display_string(graph)
 
+        return
+
     def parameter_to_string(self, parameter):
         return '' if parameter == None else unicode(parameter)
 
@@ -168,5 +172,6 @@ class DeviceParameterComponent(ControlSurfaceComponent):
         return parameter.value
 
     def update(self):
+        super(DeviceParameterComponent, self).update()
         if self.is_enabled():
             self._update_parameters()

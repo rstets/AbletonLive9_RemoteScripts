@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/DeviceNavigationComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Launch_Control/DeviceNavigationComponent.py
 import Live
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.SubjectSlot import subject_slot
@@ -39,5 +39,6 @@ class DeviceNavigationComponent(ControlSurfaceComponent):
             self._previous_button.turn_on()
 
     def update(self):
+        super(DeviceNavigationComponent, self).update()
         if self.is_enabled():
             self._update_button_states()

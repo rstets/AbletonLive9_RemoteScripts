@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControlXT/MackieControlXT.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/MackieControlXT/MackieControlXT.py
 from MackieControl.consts import *
 from MackieControl.MainDisplay import MainDisplay
 from MackieControl.ChannelStrip import ChannelStrip
@@ -19,6 +19,7 @@ class MackieControlXT:
             self.__components.append(s)
 
         self.__mackie_control_main = None
+        return
 
     def disconnect(self):
         for c in self.__components:

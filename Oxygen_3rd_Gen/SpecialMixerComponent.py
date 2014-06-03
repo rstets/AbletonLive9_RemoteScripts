@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Oxygen_3rd_Gen/SpecialMixerComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Oxygen_3rd_Gen/SpecialMixerComponent.py
 from _Framework.MixerComponent import MixerComponent
 
 class SpecialMixerComponent(MixerComponent):
@@ -13,6 +13,7 @@ class SpecialMixerComponent(MixerComponent):
         self._unregister_timer_callback(self._on_timer)
         self._selected_tracks = None
         MixerComponent.disconnect(self)
+        return
 
     def tracks_to_use(self):
         return tuple(self.song().visible_tracks) + tuple(self.song().return_tracks)
@@ -53,6 +54,7 @@ class SpecialMixerComponent(MixerComponent):
                 sel_track.arm = True
                 sel_track.view.select_instrument()
         self._selected_tracks = []
+        return
 
     def _next_track_value(self, value):
         MixerComponent._next_track_value(self, value)

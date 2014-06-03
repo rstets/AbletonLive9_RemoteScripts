@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/PlayheadComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/PlayheadComponent.py
 from __future__ import with_statement
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.SubjectSlot import subject_slot
@@ -20,6 +20,7 @@ class PlayheadComponent(ControlSurfaceComponent):
         self._on_page_changed.subject = self._paginator
         self._on_grid_resolution_changed.subject = self._grid_resolution
         self._on_follower_is_following_changed.subject = self._follower
+        return
 
     def set_playhead(self, playhead):
         self._playhead = playhead
@@ -30,6 +31,7 @@ class PlayheadComponent(ControlSurfaceComponent):
         self._on_playing_status_changed.subject = clip
         self._on_song_is_playing_changed.subject = self.song() if clip else None
         self.update()
+        return
 
     @subject_slot('page')
     def _on_page_changed(self):
@@ -52,6 +54,7 @@ class PlayheadComponent(ControlSurfaceComponent):
         self.update()
 
     def update(self):
+        super(PlayheadComponent, self).update()
         if self._playhead:
             if self.is_enabled() and self.song().is_playing and self._clip and self._clip.is_playing:
                 clip_slot = self._clip.canonical_parent
@@ -66,3 +69,4 @@ class PlayheadComponent(ControlSurfaceComponent):
                 self._playhead.wrap_around = self._follower.is_following and self._paginator.can_change_page
                 self._playhead.start_time = self._paginator.page_length * self._paginator.page_index
                 self._playhead.step_length = self._paginator.page_length / len(notes)
+        return

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/RemoteSL_Classic/DisplayController.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/RemoteSL_Classic/DisplayController.py
 from RemoteSLComponent import RemoteSLComponent
 from consts import *
 
@@ -16,6 +16,7 @@ class DisplayController(RemoteSLComponent):
         self.__right_strip_names = [ str() for x in range(NUM_CONTROLS_PER_ROW) ]
         self.__right_strip_parameters = [ None for x in range(NUM_CONTROLS_PER_ROW) ]
         self.refresh_state()
+        return
 
     def disconnect(self):
         self.__send_clear_displays()
@@ -82,6 +83,7 @@ class DisplayController(RemoteSLComponent):
          [],
          [],
          []]
+        return
 
     def __send_clear_displays(self):
         start_clear_sysex = (240, 0, 32, 41, 3, 3, 18, 0)
