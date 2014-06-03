@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Task.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Task.py
 """
 Task management.
 """
@@ -22,6 +22,7 @@ class Task(object):
         self._state = RUNNING
         self._next = []
         self._task_manager = None
+        return
 
     def clear(self):
         pass
@@ -127,6 +128,7 @@ class FuncTask(Task):
         super(FuncTask, self).__init__(*a, **k)
         self._func = func
         self._equivalent = equivalent
+        return
 
     def _set_func(self, func):
         self._func = func
@@ -159,6 +161,7 @@ class GeneratorTask(Task):
         self._param = GeneratorTask.Param()
         self._set_generator(generator)
         self._equivalent = equivalent
+        return
 
     def _set_generator(self, generator):
         self._orig = generator
@@ -203,12 +206,15 @@ class TaskGroup(Task):
         for task in tasks:
             self.add(task)
 
+        return
+
     def clear(self):
         for t in self._tasks:
             t._set_parent(None)
 
         self._tasks = []
         super(TaskGroup, self).clear()
+        return
 
     @depends(log_message=const(print_message), traceback=const(traceback))
     def do_update(self, timer, log_message = None, traceback = None):
@@ -241,6 +247,7 @@ class TaskGroup(Task):
     def remove(self, task):
         self._tasks.remove(task)
         task._set_parent(None)
+        return
 
     def find(self, task):
         return find_if(lambda t: t._task_equivalent(task), self._tasks)
@@ -263,6 +270,7 @@ class WaitTask(Task):
         if duration is not None:
             self.duration = duration
         self.remaining = self.duration
+        return
 
     def do_update(self, delta):
         super(WaitTask, self).do_update(delta)
@@ -283,6 +291,7 @@ class DelayTask(Task):
         if duration is not None:
             self.duration = duration
         self.remaining = self.duration
+        return
 
     def do_restart(self):
         self.remaining = self.duration
@@ -347,6 +356,7 @@ class SequenceTask(Task):
         self._iter = iter(tasks)
         self._current = None
         self._advance_sequence()
+        return
 
     def _advance_sequence(self):
         try:
@@ -360,6 +370,7 @@ class SequenceTask(Task):
             self._current.update(delta)
             if self._current.is_killed:
                 self._advance_sequence()
+        return
 
     def do_restart(self):
         for x in self._tasks:

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ChannelStripComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ChannelStripComponent.py
 import Live
 from itertools import chain
 from ControlSurfaceComponent import ControlSurfaceComponent
@@ -53,6 +53,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
         self._arm_pressed = False
         self._invert_mute_feedback = False
         self._empty_control_slots = self.register_slot_manager()
+        return
 
     def disconnect(self):
         """ releasing references and removing listeners"""
@@ -115,6 +116,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._send_controls = None
             self._track = None
         super(ChannelStripComponent, self).disconnect()
+        return
 
     def set_track(self, track):
         if not isinstance(track, (type(None), Live.Track.Track)):
@@ -168,6 +170,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
 
         self._update_track_name_data_source()
         self.update()
+        return
 
     def _update_track_name_data_source(self):
         if self._track_name_data_source != None:
@@ -175,6 +178,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._track_name_data_source.set_display_string(self._track.name)
             else:
                 self._track_name_data_source.set_display_string(' - ')
+        return
 
     def set_send_controls(self, controls):
         if self._send_controls != None:
@@ -184,6 +188,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
 
         self._send_controls = controls
         self.update()
+        return
 
     def set_pan_control(self, control):
         if not isinstance(control, (type(None), EncoderElement)):
@@ -192,6 +197,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._pan_control != None and self._pan_control.release_parameter()
             self._pan_control = control
             self.update()
+        return
 
     def set_volume_control(self, control):
         if not isinstance(control, (type(None), EncoderElement)):
@@ -200,6 +206,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._volume_control != None and self._volume_control.release_parameter()
             self._volume_control = control
             self.update()
+        return
 
     def set_select_button(self, button):
         if not (button == None or isinstance(button, ButtonElement)):
@@ -211,6 +218,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._select_button = button
                 self._select_button != None and self._select_button.add_value_listener(self._select_value)
             self.update()
+        return
 
     def set_mute_button(self, button):
         if not (button == None or isinstance(button, ButtonElement)):
@@ -222,6 +230,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._mute_button = button
                 self._mute_button != None and self._mute_button.add_value_listener(self._mute_value)
             self.update()
+        return
 
     def set_solo_button(self, button):
         if not (button == None or isinstance(button, ButtonElement)):
@@ -234,6 +243,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._solo_button = button
                 self._solo_button != None and self._solo_button.add_value_listener(self._solo_value)
             self.update()
+        return
 
     def set_arm_button(self, button):
         if not self._track != self.song().master_track:
@@ -247,6 +257,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._arm_button = button
                 self._arm_button != None and self._arm_button.add_value_listener(self._arm_value)
             self.update()
+        return
 
     def set_shift_button(self, button):
         if not self._track != self.song().master_track:
@@ -259,6 +270,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._shift_button = button
                 self._shift_button != None and self._shift_button.add_value_listener(self._shift_value)
             self.update()
+        return
 
     def set_crossfade_toggle(self, button):
         if not self._track != self.song().master_track:
@@ -271,6 +283,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._crossfade_toggle = button
                 self._crossfade_toggle != None and self._crossfade_toggle.add_value_listener(self._crossfade_toggle_value)
             self.update()
+        return
 
     def set_invert_mute_feedback(self, invert_feedback):
         if not isinstance(invert_feedback, type(False)):
@@ -290,6 +303,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                     self._select_button.turn_off()
             else:
                 self._select_button.set_light(self.empty_color)
+        return
 
     def solo_button_pressed(self):
         return self._solo_pressed
@@ -319,6 +333,8 @@ class ChannelStripComponent(ControlSurfaceComponent):
                         self._empty_control_slots.register_slot(send_control, nop, 'value')
                 index += 1
 
+        return
+
     def _disconnect_parameters(self):
         if self._pan_control != None:
             self._pan_control.release_parameter()
@@ -332,7 +348,10 @@ class ChannelStripComponent(ControlSurfaceComponent):
                     send_control.release_parameter()
                     self._empty_control_slots.register_slot(send_control, nop, 'value')
 
+        return
+
     def update(self):
+        super(ChannelStripComponent, self).update()
         if self._allow_updates:
             if self.is_enabled():
                 self._empty_control_slots.disconnect()
@@ -349,6 +368,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._disconnect_parameters()
         else:
             self._update_requests += 1
+        return
 
     def _select_value(self, value):
         if not self._select_button != None:
@@ -358,6 +378,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 if self.is_enabled():
                     if self._track != None:
                         self.song().view.selected_track = (value != 0 or not self._select_button.is_momentary()) and self.song().view.selected_track != self._track and self._track
+        return
 
     def _mute_value(self, value):
         if not self._mute_button != None:
@@ -366,6 +387,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 raise AssertionError
                 if self.is_enabled():
                     self._track.mute = self._track != None and self._track != self.song().master_track and (not self._mute_button.is_momentary() or value != 0) and not self._track.mute
+        return
 
     def update_solo_state(self, solo_exclusive, new_value, respect_multi_selection, track):
         if track == self._track or respect_multi_selection and track.is_part_of_selection:
@@ -392,6 +414,8 @@ class ChannelStripComponent(ControlSurfaceComponent):
                     for track in self.song().return_tracks:
                         self.update_solo_state(solo_exclusive, new_value, respect_multi_selection, track)
 
+        return
+
     def _arm_value(self, value):
         if not self._arm_button != None:
             raise AssertionError
@@ -412,9 +436,12 @@ class ChannelStripComponent(ControlSurfaceComponent):
                             elif arm_exclusive and track.arm:
                                 track.arm = False
 
+        return
+
     def _shift_value(self, value):
         raise self._shift_button != None or AssertionError
         self._shift_pressed = value != 0
+        return
 
     def _crossfade_toggle_value(self, value):
         if not self._crossfade_toggle != None:
@@ -423,6 +450,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 raise AssertionError
                 if self.is_enabled():
                     self._track.mixer_device.crossfade_assign = self._track != None and (value != 0 or not self._crossfade_toggle.is_momentary()) and (self._track.mixer_device.crossfade_assign - 1) % len(self._track.mixer_device.crossfade_assignments.values)
+        return
 
     def _on_sends_changed(self):
         if self.is_enabled():
@@ -437,6 +465,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                     self._mute_button.turn_off()
             else:
                 self._mute_button.set_light(self.empty_color)
+        return
 
     def _on_solo_changed(self):
         if self.is_enabled() and self._solo_button != None:
@@ -447,6 +476,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                     self._solo_button.turn_off()
             else:
                 self._solo_button.set_light(self.empty_color)
+        return
 
     def _on_arm_changed(self):
         if self.is_enabled() and self._arm_button != None:
@@ -454,10 +484,12 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._arm_button.turn_on()
             else:
                 self._arm_button.turn_off()
+        return
 
     def _on_track_name_changed(self):
         if self._track != None:
             self._update_track_name_data_source()
+        return
 
     def _on_cf_assign_changed(self):
         if self.is_enabled() and self._crossfade_toggle != None:
@@ -465,6 +497,7 @@ class ChannelStripComponent(ControlSurfaceComponent):
                 self._crossfade_toggle.turn_on()
             else:
                 self._crossfade_toggle.turn_off()
+        return
 
     def _on_input_routing_changed(self):
         if not self._track != None:
@@ -472,3 +505,4 @@ class ChannelStripComponent(ControlSurfaceComponent):
             if self.is_enabled():
                 self._track.can_be_armed and not self._track.arm_has_listener(self._on_arm_changed) and self._track.add_arm_listener(self._on_arm_changed)
             self._on_arm_changed()
+        return

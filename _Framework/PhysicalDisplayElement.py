@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/PhysicalDisplayElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/PhysicalDisplayElement.py
 from itertools import ifilter, izip, starmap, chain, imap
 from functools import partial
 from Resource import StackingResource, ProxyResource, ClientWrapper
@@ -58,6 +58,7 @@ class DisplayElement(ControlElement):
         self._width = width_in_chars
         self._logical_segments = []
         self.set_num_segments(num_segments)
+        return
 
     @property
     def display_string(self):
@@ -123,6 +124,8 @@ class DisplayElement(ControlElement):
     def reset(self):
         for segment in self._logical_segments:
             segment.set_data_source(None)
+
+        return
 
     def update(self):
         pass
@@ -235,6 +238,7 @@ class PhysicalDisplayElement(DisplayElement, CompoundElement):
         self._block_messages = False
         self._send_message_task = self._tasks.add(Task.run(self._send_message))
         self._send_message_task.kill()
+        return
 
     def nested_display_resource_factory(self, display):
         wrapper = ClientWrapper(wrap=lambda c: (display, c), unwrap=partial(maybe(second)))
@@ -293,10 +297,12 @@ class PhysicalDisplayElement(DisplayElement, CompoundElement):
             raise AssertionError
             self._message_to_send = len(self._logical_segments) > 0 and not self._block_messages and None
             self._request_send_message()
+        return
 
     def clear_send_cache(self):
         self._last_sent_message = None
         self._request_send_message()
+        return
 
     def reset(self):
         if not (self._message_clear_all is not None or self._message_header is not None):
@@ -307,6 +313,7 @@ class PhysicalDisplayElement(DisplayElement, CompoundElement):
             else:
                 self._message_to_send = tuple(chain(self._message_header, self._translate_string(' ' * self._width), self._message_tail))
             self._request_send_message()
+        return
 
     def send_midi(self, midi_bytes):
         if midi_bytes != self._last_sent_message:
@@ -321,6 +328,7 @@ class PhysicalDisplayElement(DisplayElement, CompoundElement):
             if self._message_to_send is None:
                 self._message_to_send = self._build_message(map(first, self._central_resource.owners))
             self.send_midi(self._message_to_send)
+        return
 
     def _translate_char(self, char_to_translate):
         result = 63

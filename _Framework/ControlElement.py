@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ControlElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ControlElement.py
 import traceback
 from Resource import StackingResource
 from Util import lazy_attribute, nop, const, second, print_message
@@ -94,6 +94,7 @@ class ControlElement(Disconnectable):
         if optimized_send_midi is not None:
             self.optimized_send_midi = optimized_send_midi
         register_control(self)
+        return
 
     def disconnect(self):
         self.reset()

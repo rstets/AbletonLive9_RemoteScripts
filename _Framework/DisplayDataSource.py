@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/DisplayDataSource.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/DisplayDataSource.py
 from functools import partial
 
 def adjust_string_crop(original, length):
@@ -47,6 +47,7 @@ class DisplayDataSource(object):
         self._display_string = display_string
         self._update_callback = None
         self._in_update = False
+        return
 
     def _get_separator(self):
         return self._separator
@@ -79,6 +80,7 @@ class DisplayDataSource(object):
             self._in_update = True
             self._update_callback != None and self._update_callback()
         self._in_update = False
+        return
 
     def display_string(self):
         return self._display_string

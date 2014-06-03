@@ -1,18 +1,20 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ChannelTranslationSelector.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ChannelTranslationSelector.py
 from ModeSelectorComponent import ModeSelectorComponent
 from InputControlElement import InputControlElement
 
 class ChannelTranslationSelector(ModeSelectorComponent):
     """ Class switches modes by translating the given controls' message channel """
 
-    def __init__(self, num_modes = 0):
-        ModeSelectorComponent.__init__(self)
+    def __init__(self, num_modes = 0, *a, **k):
+        super(ChannelTranslationSelector, self).__init__(*a, **k)
         self._controls_to_translate = None
         self._initial_num_modes = num_modes
+        return
 
     def disconnect(self):
         ModeSelectorComponent.disconnect(self)
         self._controls_to_translate = None
+        return
 
     def set_controls_to_translate(self, controls):
         raise self._controls_to_translate == None or AssertionError
@@ -22,6 +24,7 @@ class ChannelTranslationSelector(ModeSelectorComponent):
             raise isinstance(control, InputControlElement) or AssertionError
 
         self._controls_to_translate = controls
+        return
 
     def number_of_modes(self):
         result = self._initial_num_modes
@@ -30,8 +33,11 @@ class ChannelTranslationSelector(ModeSelectorComponent):
         return result
 
     def update(self):
+        super(ChannelTranslationSelector, self).update()
         if self._controls_to_translate != None:
             for control in self._controls_to_translate:
                 control.use_default_message()
                 if self.is_enabled():
                     control.set_channel((control.message_channel() + self._mode_index) % 16)
+
+        return

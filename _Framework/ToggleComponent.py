@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ToggleComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ToggleComponent.py
 from SubjectSlot import subject_slot
 from ControlSurfaceComponent import ControlSurfaceComponent
 
@@ -24,6 +24,7 @@ class ToggleComponent(ControlSurfaceComponent):
             if view_transform:
                 self.view_transform = model_transform
             self.read_only = read_only and read_only
+        return
 
     def model_transform(self, value):
         return value
@@ -52,11 +53,13 @@ class ToggleComponent(ControlSurfaceComponent):
         raise button is None or not self.is_momentary or button.is_momentary() or AssertionError
         self._on_button_value.subject = button
         self._update_button()
+        return
 
     def on_enabled_changed(self):
         self.update()
 
     def update(self):
+        super(ToggleComponent, self).update()
         self._update_button()
 
     def _update_button(self):

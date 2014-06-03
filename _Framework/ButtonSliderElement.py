@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ButtonSliderElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ButtonSliderElement.py
 from SliderElement import SliderElement
 from InputControlElement import InputControlElement, MIDI_INVALID_TYPE
 from ButtonElement import ButtonElement
@@ -20,11 +20,14 @@ class ButtonSliderElement(SliderElement):
             raise isinstance(new_button, ButtonElement) or AssertionError
             new_button.add_value_listener(self._button_value, identify_sender)
 
+        return
+
     def disconnect(self):
         if self._parameter_to_map_to != None:
             self._parameter_to_map_to.remove_value_listener(self._on_parameter_changed)
         SliderElement.disconnect(self)
         self._buttons = None
+        return
 
     def message_channel(self):
         raise NotImplementedError, 'message_channel() should not be called directly on ButtonSliderElement'
@@ -45,11 +48,13 @@ class ButtonSliderElement(SliderElement):
         if self._parameter_to_map_to != None:
             self._parameter_to_map_to.add_value_listener(self._on_parameter_changed)
             self._on_parameter_changed()
+        return
 
     def release_parameter(self):
         if self._parameter_to_map_to != None:
             self._parameter_to_map_to.remove_value_listener(self._on_parameter_changed)
         InputControlElement.release_parameter(self)
+        return
 
     def identifier_bytes(self):
         raise RuntimeWarning, 'identifier_bytes() should not be called on ButtonSliderElement'
@@ -83,9 +88,11 @@ class ButtonSliderElement(SliderElement):
                 self._parameter_to_map_to.value = param_value
             self._last_button_lit = index_of_sender
             self.notify_value(midi_value)
+        return
 
     def _on_parameter_changed(self):
         raise self._parameter_to_map_to != None or AssertionError
         param_range = abs(self._parameter_to_map_to.max - self._parameter_to_map_to.min)
         midi_value = int(127 * abs(self._parameter_to_map_to.value - self._parameter_to_map_to.min) / param_range)
         self.send_value(midi_value)
+        return

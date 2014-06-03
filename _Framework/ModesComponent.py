@@ -1,13 +1,14 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ModesComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ModesComponent.py
 """
 Mode handling components.
 """
 from itertools import imap
 from functools import partial
+from Dependency import depends
 from ControlSurfaceComponent import ControlSurfaceComponent
 from CompoundComponent import CompoundComponent
 from Resource import StackingResource
-from Util import is_iterable, is_contextmanager, infinite_context_manager, NamedTuple
+from Util import is_iterable, is_contextmanager, lazy_attribute, infinite_context_manager, NamedTuple
 from SubjectSlot import subject_slot
 from Layer import Layer
 import Task
@@ -71,6 +72,7 @@ class ContextManagerMode(Mode):
 
     def leave_mode(self):
         self._context_manager.__exit__(None, None, None)
+        return
 
     def __exit__(self, exc_type, exc_value, traceback):
         return self._context_manager.__exit__(exc_type, exc_value, traceback)
@@ -90,12 +92,34 @@ class ComponentMode(Mode):
         super(ComponentMode, self).__init__(*a, **k)
         raise component is not None or AssertionError
         self._component = component
+        return
 
     def enter_mode(self):
         self._component.set_enabled(True)
 
     def leave_mode(self):
         self._component.set_enabled(False)
+
+
+class LazyComponentMode(Mode):
+    """
+    Creates the component the first time the mode is entered and
+    enables it while the mode is active.
+    """
+
+    def __init__(self, component_creator = None, *a, **k):
+        super(LazyComponentMode, self).__init__(*a, **k)
+        self._component_creator = component_creator
+
+    @lazy_attribute
+    def component(self):
+        return self._component_creator()
+
+    def enter_mode(self):
+        self.component.set_enabled(True)
+
+    def leave_mode(self):
+        self.component.set_enabled(False)
 
 
 class DisableMode(Mode):
@@ -107,6 +131,7 @@ class DisableMode(Mode):
         super(DisableMode, self).__init__(*a, **k)
         raise component is not None or AssertionError
         self._component = component
+        return
 
     def enter_mode(self):
         self._component.set_enabled(False)
@@ -115,43 +140,44 @@ class DisableMode(Mode):
         self._component.set_enabled(True)
 
 
-class LayerMode(Mode):
+class LayerModeBase(Mode):
+
+    def __init__(self, component = None, layer = None, *a, **k):
+        super(LayerModeBase, self).__init__(*a, **k)
+        raise component is not None or AssertionError
+        self._component = component
+        self._layer = layer
+        return
+
+    def _get_component(self):
+        return self._component() if callable(self._component) else self._component
+
+
+class LayerMode(LayerModeBase):
     """
     Sets the layer of a component to a specific one.  When the mode is
     exited leaves the component without a layer.
     """
 
-    def __init__(self, component = None, layer = None, *a, **k):
-        super(LayerMode, self).__init__(*a, **k)
-        raise component is not None or AssertionError
-        self._component = component
-        self._layer = layer
-
     def enter_mode(self):
-        self._component.layer = self._layer
+        self._get_component().layer = self._layer
 
     def leave_mode(self):
-        self._component.layer = None
+        self._get_component().layer = None
+        return
 
 
-class AddLayerMode(Mode):
+class AddLayerMode(LayerModeBase):
     """
     Adds an extra layer to a component, independently of the layer
     associated to the component.
     """
 
-    def __init__(self, component = None, layer = None, *a, **k):
-        super(AddLayerMode, self).__init__(*a, **k)
-        raise component is not None or AssertionError
-        raise layer is not None or AssertionError
-        self._component = component
-        self._layer = layer
-
     def enter_mode(self):
-        self._layer.grab(self._component)
+        self._layer.grab(self._get_component())
 
     def leave_mode(self):
-        self._layer.release(self._component)
+        self._layer.release(self._get_component())
 
 
 class CompoundMode(Mode):
@@ -216,14 +242,50 @@ class SetAttributeMode(Mode):
         self._attribute = attribute
         self._old_value = None
         self._value = value
+        return
+
+    def _get_object(self):
+        return self._obj() if callable(self._obj) else self._obj
 
     def enter_mode(self):
-        self._old_value = getattr(self._obj, self._attribute, None)
-        setattr(self._obj, self._attribute, self._value)
+        self._old_value = getattr(self._get_object(), self._attribute, None)
+        setattr(self._get_object(), self._attribute, self._value)
+        return
 
     def leave_mode(self):
-        if getattr(self._obj, self._attribute) == self._value:
-            setattr(self._obj, self._attribute, self._old_value)
+        if getattr(self._get_object(), self._attribute) == self._value:
+            setattr(self._get_object(), self._attribute, self._old_value)
+
+
+class DelayMode(Mode):
+    """
+    Decorates a mode by delaying it.
+    """
+
+    @depends(parent_task_group=None)
+    def __init__(self, mode = None, delay = None, parent_task_group = None, *a, **k):
+        super(DelayMode, self).__init__(*a, **k)
+        raise mode is not None or AssertionError
+        raise parent_task_group is not None or AssertionError
+        delay = delay or Defaults.MOMENTARY_DELAY
+        self._mode = mode
+        self._mode_entered = False
+        self._delay_task = parent_task_group.add(Task.sequence(Task.wait(delay), Task.run(self._enter_mode_delayed)))
+        self._delay_task.kill()
+        return
+
+    def _enter_mode_delayed(self):
+        self._mode_entered = True
+        self._mode.enter_mode()
+
+    def enter_mode(self):
+        self._delay_task.restart()
+
+    def leave_mode(self):
+        if self._mode_entered:
+            self._mode.leave_mode()
+            self._mode_entered = False
+        self._delay_task.kill()
 
 
 class ModeButtonBehaviour(object):
@@ -293,6 +355,7 @@ class ReenterBehaviour(LatchingBehaviour):
         super(ReenterBehaviour, self).__init__(*a, **k)
         if on_reenter is not None:
             self.on_reenter = on_reenter
+        return
 
     def press_immediate(self, component, mode):
         was_active = component.selected_mode == mode
@@ -328,10 +391,12 @@ class CancellableBehaviour(ModeButtonBehaviour):
 
     def remember_previous_mode(self, component):
         self._previous_mode = component.active_modes[0] if component.active_modes else None
+        return
 
     def restore_previous_mode(self, component):
         if len(component.active_modes) == 0 and self._previous_mode != None:
             component.push_mode(self._previous_mode)
+        return
 
 
 class ImmediateBehaviour(ModeButtonBehaviour):
@@ -390,6 +455,7 @@ class DynamicBehaviourMixin(ModeButtonBehaviour):
         super(DynamicBehaviourMixin, self).__init__(*a, **k)
         self._mode_chooser = mode_chooser
         self._chosen_mode = None
+        return
 
     def press_immediate(self, component, mode):
         self._chosen_mode = self._mode_chooser() or mode
@@ -494,6 +560,7 @@ class ModesComponent(CompoundComponent):
         self._last_selected_mode = None
         self._mode_stack = StackingResource(self._do_enter_mode, self._do_leave_mode)
         self._shift_button = None
+        return
 
     def disconnect(self):
         self._mode_stack.release_all()
@@ -514,6 +581,7 @@ class ModesComponent(CompoundComponent):
         if self._mode_stack.stack_size == 0:
             self._update_buttons(None)
             self.notify_selected_mode(None)
+        return
 
     def _get_selected_mode(self):
         """
@@ -532,6 +600,7 @@ class ModesComponent(CompoundComponent):
                 self._mode_stack.release_all()
         else:
             self._last_selected_mode = mode
+        return
 
     selected_mode = property(_get_selected_mode, _set_selected_mode)
 
@@ -584,6 +653,7 @@ class ModesComponent(CompoundComponent):
             self.push_mode(self._last_selected_mode)
 
     def update(self):
+        super(ModesComponent, self).update()
         self._update_buttons(self.selected_mode)
 
     def add_mode(self, name, mode_or_component, toggle_value = False, groups = set(), behaviour = None):
@@ -654,6 +724,7 @@ class ModesComponent(CompoundComponent):
                 entry = self._mode_map.get(selected)
                 value = entry and entry.toggle_value
                 self._mode_toggle.set_light(value)
+        return
 
     def _on_mode_button_value(self, name, value, sender):
         shift = self._shift_button and self._shift_button.is_pressed()
@@ -738,3 +809,4 @@ class EnablingModesComponent(ModesComponent):
         self.add_mode('disabled', None)
         self.add_mode('enabled', component, toggle_value)
         self.selected_mode = 'disabled'
+        return

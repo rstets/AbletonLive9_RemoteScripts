@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ControlSurface.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ControlSurface.py
 from __future__ import with_statement
 from functools import partial, wraps
 from itertools import chain
@@ -9,6 +9,7 @@ from Profile import profile
 from Dependency import inject
 from Util import BooleanContext, first, find_if, const, in_range
 from Debug import debug_print
+from ControlElement import OptimizedOwnershipHandler
 from SubjectSlot import SlotManager
 from DeviceComponent import DeviceComponent
 from PhysicalDisplayElement import PhysicalDisplayElement
@@ -46,15 +47,18 @@ def _scheduled_method(method):
 CS_LIST_KEY = 'control_surfaces'
 
 def publish_control_surface(control_surface):
+    get_control_surfaces().append(control_surface)
+
+
+def get_control_surfaces():
     if isinstance(__builtins__, dict):
         if CS_LIST_KEY not in __builtins__.keys():
             __builtins__[CS_LIST_KEY] = []
-        __builtins__[CS_LIST_KEY].append(control_surface)
+        return __builtins__[CS_LIST_KEY]
     else:
         if not hasattr(__builtins__, CS_LIST_KEY):
             setattr(__builtins__, CS_LIST_KEY, [])
-        cs_list = getattr(__builtins__, CS_LIST_KEY)
-        cs_list.append(control_surface)
+        return getattr(__builtins__, CS_LIST_KEY)
 
 
 class ControlSurface(SlotManager):
@@ -101,6 +105,7 @@ class ControlSurface(SlotManager):
             self.song().add_scenes_listener(self._on_scene_list_changed)
             self.song().view.add_selected_track_listener(self._on_selected_track_changed)
             self.song().view.add_selected_scene_listener(self._on_selected_scene_changed)
+        return
 
     @property
     def components(self):
@@ -148,6 +153,7 @@ class ControlSurface(SlotManager):
             cs_list.remove(self)
         self._task_group.clear()
         super(ControlSurface, self).disconnect()
+        return
 
     def _control_surfaces(self):
         """ Returns list of registered control surfaces """
@@ -174,6 +180,7 @@ class ControlSurface(SlotManager):
         raise self._device_component != None or AssertionError
         with self.component_guard():
             self._device_component.set_lock_to_device(True, device)
+        return
 
     @_scheduled_method
     def unlock_from_device(self, device):
@@ -184,6 +191,7 @@ class ControlSurface(SlotManager):
         raise self._device_component != None or AssertionError
         with self.component_guard():
             self._device_component.set_lock_to_device(False, device)
+        return
 
     @_scheduled_method
     def restore_bank(self, bank_index):
@@ -194,6 +202,7 @@ class ControlSurface(SlotManager):
         raise self._device_component != None or AssertionError
         with self.component_guard():
             self._device_component.restore_bank(bank_index)
+        return
 
     @_scheduled_method
     def set_appointed_device(self, device):
@@ -246,6 +255,7 @@ class ControlSurface(SlotManager):
         raise self._highlighting_session_component is None or AssertionError, 'There must be one session component only'
         self._highlighting_session_component = session_component
         self._highlighting_session_component.set_highlighting_callback(self._set_session_highlight)
+        return
 
     def highlighting_session_component(self):
         """ Return the session component showing the ring in Live session """
@@ -266,6 +276,7 @@ class ControlSurface(SlotManager):
             print console_message
         if self._c_instance:
             self._c_instance.log_message(message)
+        return
 
     def instance_identifier(self):
         return self._c_instance.instance_identifier()
@@ -307,6 +318,7 @@ class ControlSurface(SlotManager):
 
             if self._pad_translations != None:
                 self._c_instance.set_pad_translation(self._pad_translations)
+        return
 
     def toggle_lock(self):
         """ Script -> Live
@@ -363,6 +375,7 @@ class ControlSurface(SlotManager):
         forwarding_key = midi_bytes[:1 if is_pitchbend else 2]
         if forwarding_key in self._forwarding_registry:
             return self._forwarding_registry[forwarding_key]
+        return None
 
     def handle_nonsysex(self, midi_bytes):
         is_pitchbend = midi_bytes[0] & 240 == MIDI_PB_STATUS
@@ -372,6 +385,7 @@ class ControlSurface(SlotManager):
             recipient.receive_value(value)
         else:
             self.log_message('Got unknown message: ' + str(midi_bytes))
+        return
 
     def handle_sysex(self, midi_bytes):
         result = find_if(lambda (id, _): midi_bytes[:len(id)] == id, self._forwarding_long_identifier_registry.iteritems())
@@ -380,6 +394,7 @@ class ControlSurface(SlotManager):
             control.receive_value(midi_bytes[len(id):-1])
         else:
             self.log_message('Got unknown sysex message: ', midi_bytes)
+        return
 
     def set_device_component(self, device_component):
         raise self._device_component == None or AssertionError
@@ -387,6 +402,7 @@ class ControlSurface(SlotManager):
         raise isinstance(device_component, DeviceComponent) or AssertionError
         self._device_component = device_component
         self._device_component.set_lock_callback(self._toggle_lock)
+        return
 
     @contextmanager
     def suppressing_rebuild_requests(self):
@@ -424,6 +440,7 @@ class ControlSurface(SlotManager):
 
         raise all(map(check_translation, pad_translations)) or AssertionError
         self._pad_translations = pad_translations
+        return
 
     def set_enabled(self, enable):
         bool_enable = bool(enable)
@@ -454,11 +471,14 @@ class ControlSurface(SlotManager):
             delay_in_ticks and self._task_group.add(Task.sequence(Task.delay(delay_in_ticks), message))
         else:
             self._task_group.add(message)
+        return
 
     def _process_remaining_scheduled_messages(self):
         current_scheduled_messages = tuple(self._remaining_scheduled_messages)
         for message, in current_scheduled_messages:
             message(None)
+
+        return
 
     def set_feedback_channels(self, channels):
         self._c_instance.set_feedback_channels(channels)
@@ -467,6 +487,7 @@ class ControlSurface(SlotManager):
         """ Sets the track that will send its feedback to the control surface """
         raise track == None or isinstance(track, Live.Track.Track) or AssertionError
         self._c_instance.set_controlled_track(track)
+        return
 
     def release_controlled_track(self):
         """ Sets that no track will send its feedback to the control surface """
@@ -480,6 +501,7 @@ class ControlSurface(SlotManager):
             self.controls.append(control)
             control.canonical_parent = self
             isinstance(control, PhysicalDisplayElement) and self._displays.append(control)
+        return
 
     def _register_component(self, component):
         """ puts component into the list of controls for triggering updates """
@@ -487,6 +509,7 @@ class ControlSurface(SlotManager):
         raise component not in self._components or AssertionError, 'Component registered twice'
         self._components.append(component)
         component.canonical_parent = self
+        return
 
     @contextmanager
     def component_guard(self):
@@ -517,6 +540,8 @@ class ControlSurface(SlotManager):
         finally:
             self._c_instance.set_listener_caller(None)
 
+        return
+
     @profile
     def _call_guarded_listener(self, listener):
         if _ModuleLoadedCheck == None or self._c_instance == None:
@@ -528,7 +553,9 @@ class ControlSurface(SlotManager):
                     listener()
             except:
                 self.log_message('Detected broken listener at:', listener.name)
-                raise 
+                raise
+
+        return
 
     @contextmanager
     def accumulating_midi_messages(self):
@@ -537,6 +564,9 @@ class ControlSurface(SlotManager):
                 yield
             finally:
                 self._flush_midi_messages()
+
+    def get_control_by_name(self, control_name):
+        return find_if(lambda c: c.name == control_name, self.controls)
 
     def _send_midi(self, midi_event_bytes, optimized = True):
         """
@@ -681,6 +711,7 @@ class ControlSurface(SlotManager):
     def _toggle_lock(self):
         raise self._device_component != None or AssertionError
         self._c_instance.toggle_lock()
+        return
 
     def _refresh_displays(self):
         """
@@ -701,3 +732,23 @@ class ControlSurface(SlotManager):
             self._device_component.set_device(self.song().appointed_device)
         else:
             self._device_component.set_device(None)
+        return
+
+
+class OptimizedControlSurface(ControlSurface):
+    """
+    Control Surface that makes use of the optimized ownership handler for controls.
+    """
+
+    def __init__(self, *a, **k):
+        super(OptimizedControlSurface, self).__init__(*a, **k)
+        self._optimized_ownership_handler = OptimizedOwnershipHandler()
+        injecting = inject(element_ownership_handler=const(self._optimized_ownership_handler))
+        self._ownership_handler_injector = injecting.everywhere()
+
+    @contextmanager
+    def component_guard(self):
+        with super(OptimizedControlSurface, self).component_guard():
+            with self._ownership_handler_injector:
+                yield
+                self._optimized_ownership_handler.commit_ownership_changes()

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Resource.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Resource.py
 from functools import partial
 from _Framework.Proxy import Proxy
 from _Framework.Util import index_if, nop, first, NamedTuple
@@ -73,6 +73,7 @@ class ExclusiveResource(Resource):
             self.on_grab = on_grab_callback
         if on_release_callback:
             self.on_release = on_release_callback
+        return
 
     def grab(self, client, *a, **k):
         if not client is not None:
@@ -119,7 +120,7 @@ class SharedResource(Resource):
         return True
 
     def release(self, client):
-        if not client:
+        if not client is not None:
             raise AssertionError
             client in self._clients and self.on_release(client)
             self._clients.remove(client)

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/InputControlElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/InputControlElement.py
 from __future__ import with_statement
 import contextlib
 from Dependency import depends
@@ -66,15 +66,18 @@ class ParameterSlot(Disconnectable):
     def connect(self):
         if self._control != None and self._parameter != None:
             self._control.connect_to(self._parameter)
+        return
 
     def soft_disconnect(self):
         if self._control != None and self._parameter != None:
             self._control.release_parameter()
+        return
 
     def disconnect(self):
         self.parameter = None
         self.control = None
         super(ParameterSlot, self).disconnect()
+        return
 
 
 class InputSignal(Signal):
@@ -121,6 +124,10 @@ class InputControlElement(NotifyingControlElement):
 
     class ProxiedInterface(NotifyingControlElement.ProxiedInterface):
         send_value = nop
+        receive_value = nop
+        use_default_message = nop
+        set_channel = nop
+        message_channel = const(None)
 
     __subject_events__ = (SubjectEvent(name='value', signal=InputSignal, override=True),)
     _input_signal_listener_count = 0
@@ -157,6 +164,7 @@ class InputControlElement(NotifyingControlElement):
         self._last_sent_message = None
         self._report_input = False
         self._report_output = False
+        return
 
     def message_type(self):
         return self._msg_type
@@ -164,8 +172,14 @@ class InputControlElement(NotifyingControlElement):
     def message_channel(self):
         return self._msg_channel
 
+    def original_channel(self):
+        return self._original_channel
+
     def message_identifier(self):
         return self._msg_identifier
+
+    def original_identifier(self):
+        return self._original_identifier
 
     def message_sysex_identifier(self):
         return self._msg_sysex_identifier
@@ -194,6 +208,7 @@ class InputControlElement(NotifyingControlElement):
             raise in_range(channel, 0, 16) or channel == None or AssertionError
             self._msg_channel = self._msg_channel != channel and channel
             self._request_rebuild()
+        return
 
     def set_identifier(self, identifier):
         if not self._msg_type != MIDI_SYSEX_TYPE:
@@ -201,6 +216,7 @@ class InputControlElement(NotifyingControlElement):
             raise in_range(identifier, 0, 128) or identifier == None or AssertionError
             self._msg_identifier = self._msg_identifier != identifier and identifier
             self._request_rebuild()
+        return
 
     def set_needs_takeover(self, needs_takeover):
         raise self.message_type() != MIDI_NOTE_TYPE or AssertionError
@@ -245,6 +261,7 @@ class InputControlElement(NotifyingControlElement):
             self._is_being_forwarded = install_forwarding(self)
             if self._is_being_forwarded and self.send_depends_on_forwarding:
                 self._send_delayed_messages_task.restart()
+        return
 
     def script_wants_forwarding(self):
         """
@@ -283,12 +300,14 @@ class InputControlElement(NotifyingControlElement):
             else:
                 self._parameter_to_map_to = parameter
                 self._request_rebuild()
+        return
 
     def release_parameter(self):
         if self._parameter_to_map_to != None:
             self.end_gesture()
             self._parameter_to_map_to = None
             self._request_rebuild()
+        return
 
     def mapped_parameter(self):
         return self._parameter_to_map_to
@@ -353,6 +372,7 @@ class InputControlElement(NotifyingControlElement):
 
     def clear_send_cache(self):
         self._last_sent_message = None
+        return
 
     def reset(self):
         """ Send 0 to reset motorized faders and turn off LEDs """
@@ -366,6 +386,7 @@ class InputControlElement(NotifyingControlElement):
         if self._report_input:
             is_input = True
             self._report_value(value, is_input)
+        return
 
     def set_report_values(self, report_input, report_output):
         """

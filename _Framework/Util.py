@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Util.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Util.py
 """
 Various utilities.
 """
@@ -222,7 +222,7 @@ def instance_decorator(decorator):
     as second argument. The decorator method will be called lazily the
     first time the method is accessed.
     
-    For an example see @signal_slot in SubjectSlot module.
+    For an example see @subject_slot in SubjectSlot module.
     """
 
     class Decorator(object):
@@ -353,6 +353,8 @@ def find_if(predicate, seq):
         if predicate(x):
             return x
 
+    return None
+
 
 def index_if(predicate, seq):
     """
@@ -426,6 +428,7 @@ def recursive_map(fn, element, sequence_type = None):
         return map(lambda x: recursive_map(fn, x, sequence_type), element)
     else:
         return fn(element)
+    return
 
 
 def chain_from_iterable(iterables):
@@ -521,6 +524,7 @@ class BooleanContext(object):
         if default_value is not None:
             self.default_value = default_value
         self._current_value = self.default_value
+        return
 
     def __nonzero__(self):
         return bool(self._current_value)
@@ -544,6 +548,7 @@ class BooleanContext(object):
             super(BooleanContext.Manager, self).__init__(*a, **k)
             self._managed = managed
             self._update_value = update_value if update_value is not None else not managed.default_value
+            return
 
         def __enter__(self):
             managed = self._managed
@@ -730,6 +735,7 @@ class CallCounter(Bindable):
         self.count = 0
         self.last_args = None
         self.current_self = current_self
+        return
 
     def bind(self, obj):
         return CallCounter(fn=self.fn, current_self=obj)
@@ -741,3 +747,4 @@ class CallCounter(Bindable):
             return self.fn(self.current_self, *a, **k)
         else:
             return self.fn(*a, **k)
+        return

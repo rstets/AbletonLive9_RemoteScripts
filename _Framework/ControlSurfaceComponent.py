@@ -1,11 +1,12 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ControlSurfaceComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ControlSurfaceComponent.py
 import Live
+from Control import ControlManager
 from Dependency import dependency, depends
-from SubjectSlot import SlotManager, Subject
+from SubjectSlot import Subject
 from Util import lazy_attribute
 import Task
 
-class ControlSurfaceComponent(SlotManager, Subject):
+class ControlSurfaceComponent(ControlManager, Subject):
     """
     Base class for all classes encapsulating functions in Live
     """
@@ -31,6 +32,7 @@ class ControlSurfaceComponent(SlotManager, Subject):
             self._song = song
             self._layer = layer is not None and layer
         register_component(self)
+        return
 
     def disconnect(self):
         if self._has_task_group:
@@ -53,9 +55,6 @@ class ControlSurfaceComponent(SlotManager, Subject):
 
     def on_enabled_changed(self):
         self.update()
-
-    def update(self):
-        raise NotImplementedError, self.__class__
 
     def update_all(self):
         self.update()
@@ -82,6 +81,9 @@ class ControlSurfaceComponent(SlotManager, Subject):
             if self._allow_updates and self._update_requests > 0:
                 self._update_requests = 0
                 self.update()
+
+    def control_notifications_enabled(self):
+        return self.is_enabled()
 
     def application(self):
         return Live.Application.get_application()
@@ -160,6 +162,7 @@ class ControlSurfaceComponent(SlotManager, Subject):
             return Task.RUNNING
 
         parent_task_group.add(Task.FuncTask(wrapper, callback))
+        return
 
     @depends(parent_task_group=None)
     def _unregister_timer_callback(self, callback, parent_task_group = None):
@@ -170,3 +173,4 @@ class ControlSurfaceComponent(SlotManager, Subject):
         task = parent_task_group.find(callback)
         raise task is not None or AssertionError
         parent_task_group.remove(task)
+        return

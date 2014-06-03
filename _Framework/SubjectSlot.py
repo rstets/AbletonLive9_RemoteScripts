@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/SubjectSlot.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/SubjectSlot.py
 """
 Family of classes for maintaining connections with optional subjects.
 """
@@ -148,6 +148,7 @@ class SubjectSlot(Disconnectable):
         self._listener = None
         self.subject = subject
         self.listener = listener
+        return
 
     def disconnect(self):
         """
@@ -156,6 +157,7 @@ class SubjectSlot(Disconnectable):
         self.subject = None
         self.listener = None
         super(SubjectSlot, self).disconnect()
+        return
 
     def _check_subject_interface(self, subject):
         if not callable(getattr(subject, 'add_' + self._event + '_listener', None)):
@@ -164,6 +166,7 @@ class SubjectSlot(Disconnectable):
             raise SubjectSlotError('Subject %s missing "remove" method for event: %s' % (subject, self._event))
         if not callable(getattr(subject, self._event + '_has_listener', None)):
             raise SubjectSlotError('Subject %s missing "has" method for event: %s' % (subject, self._event))
+        return
 
     def connect(self):
         if not self.is_connected and self._subject != None and self._listener != None:
@@ -173,6 +176,8 @@ class SubjectSlot(Disconnectable):
                 add_method(*all_args, **self._extra_kws)
             except RuntimeError:
                 pass
+
+        return
 
     def soft_disconnect(self):
         """
@@ -186,6 +191,8 @@ class SubjectSlot(Disconnectable):
                 remove_method(*all_args)
             except RuntimeError:
                 pass
+
+        return
 
     @property
     def is_connected(self):
@@ -208,6 +215,7 @@ class SubjectSlot(Disconnectable):
             self.soft_disconnect()
             self._subject = subject
             self.connect()
+        return
 
     subject = property(_get_subject, _set_subject)
 
@@ -256,6 +264,7 @@ class SubjectSlotGroup(SlotManager):
             self._extra_kws = extra_kws
         if extra_args is not None:
             self._extra_args = extra_args
+        return
 
     def replace_subjects(self, subjects, identifiers = repeat(None)):
         self.disconnect()
@@ -267,6 +276,7 @@ class SubjectSlotGroup(SlotManager):
             identifier = subject
         listener = self._listener_for_subject(identifier)
         self.register_slot(subject, listener, self._event, self._extra_kws, self._extra_args)
+        return
 
     def remove_subject(self, subject):
         slot = self.find_disconnectable(lambda x: x.subject == subject)
@@ -294,6 +304,7 @@ class MultiSubjectSlot(SlotManager, SubjectSlot):
         if len(event) > 1:
             self._nested_slot = self.register_disconnectable(MultiSubjectSlot(event=event[1:], listener=listener, subject=subject, extra_kws=extra_kws, extra_args=extra_args))
             self._update_nested_subject()
+        return
 
     def _get_subject(self):
         return super(MultiSubjectSlot, self)._get_subject()
@@ -303,10 +314,12 @@ class MultiSubjectSlot(SlotManager, SubjectSlot):
             super(MultiSubjectSlot, self)._set_subject(subject)
         except SubjectSlotError:
             if self._nested_slot == None:
-                raise 
+                raise
         finally:
             self._slot_subject = subject
             self._update_nested_subject()
+
+        return
 
     subject = property(_get_subject, _set_subject)
 
@@ -317,6 +330,7 @@ class MultiSubjectSlot(SlotManager, SubjectSlot):
     def _update_nested_subject(self):
         if self._nested_slot != None:
             self._nested_slot.subject = getattr(self._slot_subject, self._event) if self._slot_subject != None else None
+        return
 
 
 def subject_slot(events, *a, **k):

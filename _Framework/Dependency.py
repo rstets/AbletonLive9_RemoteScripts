@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Dependency.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Dependency.py
 """
 Dependency injection framework.
 
@@ -46,6 +46,7 @@ def get_dependency_for(obj, name, default = None):
         return accessor()
     else:
         raise DependencyError('Required dependency %s not provided for %s' % (name, str(obj)))
+    return
 
 
 class dependency(object):

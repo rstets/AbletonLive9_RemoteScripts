@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/SysexValueControl.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/SysexValueControl.py
 from _Framework.InputControlElement import InputControlElement, MIDI_SYSEX_TYPE
 
 class SysexValueControl(InputControlElement):
@@ -19,7 +19,9 @@ class SysexValueControl(InputControlElement):
     def enquire_value(self):
         raise self._value_enquiry != None or AssertionError
         self.send_midi(self._value_enquiry)
+        return
 
     def reset(self):
         if self._default_value != None:
             self.send_value(self._default_value)
+        return

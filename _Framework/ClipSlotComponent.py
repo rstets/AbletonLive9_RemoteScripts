@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ClipSlotComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ClipSlotComponent.py
 import Live
 from ControlSurfaceComponent import ControlSurfaceComponent
 from Util import in_range
@@ -35,6 +35,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
         self._delete_button = None
         self._select_button = None
         self._duplicate_button = None
+        return
 
     def on_enabled_changed(self):
         self.update()
@@ -53,6 +54,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
             self._on_arm_value_changed.subject = track
             self._on_implicit_arm_value_changed.subject = track
         self.update()
+        return
 
     def set_launch_button(self, button):
         self._launch_button_value.subject = button
@@ -90,6 +92,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
         raise palette != None or AssertionError
         self._stopped_value = None
         self._clip_palette = palette
+        return
 
     def set_clip_rgb_table(self, rgb_table):
         """ A list of velocity, hex-rgb color pairs that is used, if the color could not
@@ -101,6 +104,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
         return self._clip_slot.has_clip
 
     def update(self):
+        super(ClipSlotComponent, self).update()
         self._has_fired_slot = False
         button = self._launch_button_value.subject
         if self._allow_updates:
@@ -114,6 +118,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
                     button.set_light(value_to_send)
         else:
             self._update_requests += 1
+        return
 
     def _color_value(self, color):
         try:
@@ -123,6 +128,8 @@ class ClipSlotComponent(ControlSurfaceComponent):
                 return find_nearest_color(self._clip_rgb_table, color)
             else:
                 return self._stopped_value
+
+        return
 
     def _track_is_armed(self, track):
         return track != None and track.can_be_armed and any([track.arm, track.implicit_arm])
@@ -142,12 +149,14 @@ class ClipSlotComponent(ControlSurfaceComponent):
             elif self._track_is_armed(track) and self._clip_slot.has_stop_button:
                 if self._record_button_value != None:
                     return self._record_button_value
+        return
 
     def _update_clip_property_slots(self):
         clip = self._clip_slot.clip if self._clip_slot else None
         self._on_clip_playing_state_changed.subject = clip
         self._on_recording_state_changed.subject = clip
         self._on_clip_color_changed.subject = clip
+        return
 
     @subject_slot('has_clip')
     def _on_clip_state_changed(self):
@@ -214,6 +223,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
                         self._do_delete_clip()
                 else:
                     self._do_launch_clip(value)
+        return
 
     def _do_delete_clip(self):
         if self._clip_slot and self._clip_slot.has_clip:
@@ -223,6 +233,7 @@ class ClipSlotComponent(ControlSurfaceComponent):
         if self._clip_slot != None:
             if self.song().view.highlighted_clip_slot != self._clip_slot:
                 self.song().view.highlighted_clip_slot = self._clip_slot
+        return
 
     def _do_duplicate_clip(self):
         if self._clip_slot and self._clip_slot.has_clip:

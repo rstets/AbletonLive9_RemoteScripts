@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/TrackEQComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/TrackEQComponent.py
 import Live
 from ControlSurfaceComponent import ControlSurfaceComponent
 from EncoderElement import EncoderElement
@@ -16,6 +16,7 @@ class TrackEQComponent(ControlSurfaceComponent):
         self._device = None
         self._gain_controls = None
         self._cut_buttons = None
+        return
 
     def disconnect(self):
         if self._gain_controls != None:
@@ -41,6 +42,8 @@ class TrackEQComponent(ControlSurfaceComponent):
                     if parameter != None and parameter.value_has_listener(self._on_cut_changed):
                         parameter.remove_value_listener(self._on_cut_changed)
 
+        return
+
     def on_enabled_changed(self):
         self.update()
 
@@ -56,6 +59,7 @@ class TrackEQComponent(ControlSurfaceComponent):
             self._track = track
             self._track != None and self._track.add_devices_listener(self._on_devices_changed)
         self._on_devices_changed()
+        return
 
     def set_cut_buttons(self, buttons):
         if not (buttons == None or isinstance(buttons, tuple)):
@@ -70,6 +74,7 @@ class TrackEQComponent(ControlSurfaceComponent):
                     button.add_value_listener(self._cut_value, identify_sender=True)
 
             self.update()
+        return
 
     def set_gain_controls(self, controls):
         raise controls != None or AssertionError
@@ -84,8 +89,10 @@ class TrackEQComponent(ControlSurfaceComponent):
 
         self._gain_controls = controls
         self.update()
+        return
 
     def update(self):
+        super(TrackEQComponent, self).update()
         if self.is_enabled() and self._device != None:
             device_dict = EQ_DEVICES[self._device.class_name]
             if self._gain_controls != None:
@@ -119,6 +126,8 @@ class TrackEQComponent(ControlSurfaceComponent):
                 for control in self._gain_controls:
                     control.release_parameter()
 
+        return
+
     def _cut_value(self, value, sender):
         if not sender in self._cut_buttons:
             raise AssertionError
@@ -132,6 +141,7 @@ class TrackEQComponent(ControlSurfaceComponent):
                             index = list(self._cut_buttons).index(sender)
                             parameter = index in range(len(cut_names)) and get_parameter_by_name(self._device, cut_names[index])
                             parameter.value = parameter != None and parameter.is_enabled and float(int(parameter.value + 1) % 2)
+        return
 
     def _on_devices_changed(self):
         if self._device != None:
@@ -152,6 +162,7 @@ class TrackEQComponent(ControlSurfaceComponent):
                     break
 
         self.update()
+        return
 
     def _on_cut_changed(self):
         if not self._device != None:
@@ -164,3 +175,5 @@ class TrackEQComponent(ControlSurfaceComponent):
                     parameter = get_parameter_by_name(self._device, cut_names[index])
                     if parameter != None and parameter.value == 0.0:
                         self._cut_buttons[index].turn_on()
+
+        return

@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ButtonMatrixElement.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ButtonMatrixElement.py
 from CompoundElement import CompoundElement
 from Util import in_range, product, const, slicer, to_slice
 
@@ -37,6 +37,7 @@ class ButtonMatrixElement(CompoundElement):
 
         if self._max_row_width < len(buttons):
             self._max_row_width = len(buttons)
+        return
 
     def width(self):
         return self._max_row_width
@@ -104,6 +105,7 @@ class ButtonMatrixElement(CompoundElement):
         raise self._buttons[y][x] or AssertionError
         is_momentary = getattr(sender, 'is_momentary', const(None))()
         self.notify_value(value, x, y, is_momentary)
+        return
 
     def on_nested_control_element_grabbed(self, control):
         x, y = self._button_coordinates[control]
@@ -112,3 +114,4 @@ class ButtonMatrixElement(CompoundElement):
     def on_nested_control_element_released(self, control):
         x, y = self._button_coordinates[control]
         self._buttons[y][x] = None
+        return

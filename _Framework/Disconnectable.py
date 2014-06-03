@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Disconnectable.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Disconnectable.py
 """
 Interface for items that adquire resources.
 """
@@ -70,3 +70,4 @@ class disconnectable(object):
     def __exit__(self, *a, **k):
         if self._managed is not None:
             self._managed.disconnect()
+        return

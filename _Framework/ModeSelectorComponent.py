@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ModeSelectorComponent.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/ModeSelectorComponent.py
 from ControlSurfaceComponent import ControlSurfaceComponent
 from ButtonElement import ButtonElement
 from MomentaryModeObserver import MomentaryModeObserver
@@ -14,6 +14,7 @@ class ModeSelectorComponent(ControlSurfaceComponent):
         self.__mode_index = -1
         self._modes_observers = {}
         self._modes_heap = []
+        return
 
     def _get_protected_mode_index(self):
         return self.__mode_index
@@ -42,6 +43,7 @@ class ModeSelectorComponent(ControlSurfaceComponent):
         self._modes_buttons = None
         self._mode_listeners = None
         super(ModeSelectorComponent, self).disconnect()
+        return
 
     def on_enabled_changed(self):
         self.update()
@@ -54,6 +56,7 @@ class ModeSelectorComponent(ControlSurfaceComponent):
             self._mode_toggle = button
             self._mode_toggle != None and self._mode_toggle.add_value_listener(self._toggle_value)
         self.set_mode(0)
+        return
 
     def set_mode_buttons(self, buttons):
         raise buttons != None or AssertionError
@@ -66,12 +69,14 @@ class ModeSelectorComponent(ControlSurfaceComponent):
             self._modes_buttons.append(button)
 
         self.set_mode(0)
+        return
 
     def set_mode(self, mode):
         self._clean_heap()
         self._modes_heap = [(mode, None, None)]
         if self._mode_index != mode:
             self._update_mode()
+        return
 
     def _update_mode(self):
         mode = self._modes_heap[-1][0]
@@ -86,6 +91,7 @@ class ModeSelectorComponent(ControlSurfaceComponent):
                 observer.disconnect()
 
         self._modes_heap = []
+        return
 
     def number_of_modes(self):
         raise NotImplementedError
@@ -100,9 +106,6 @@ class ModeSelectorComponent(ControlSurfaceComponent):
     def remove_mode_index_listener(self, listener):
         raise listener in self._mode_listeners or AssertionError
         self._mode_listeners.remove(listener)
-
-    def update(self):
-        raise NotImplementedError
 
     def _mode_value(self, value, sender):
         raise len(self._modes_buttons) > 0 or AssertionError
@@ -132,6 +135,7 @@ class ModeSelectorComponent(ControlSurfaceComponent):
             raise AssertionError
             raise isinstance(value, int) or AssertionError
             (value is not 0 or not self._mode_toggle.is_momentary()) and self.set_mode((self._mode_index + 1) % self.number_of_modes())
+        return
 
     def _controls_for_mode(self, mode):
         return None
@@ -140,3 +144,5 @@ class ModeSelectorComponent(ControlSurfaceComponent):
         for _, _, mode_observer in self._modes_heap:
             if mode_observer != None:
                 mode_observer.on_timer()
+
+        return

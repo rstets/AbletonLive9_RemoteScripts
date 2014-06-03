@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/LogicalDisplaySegment.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/LogicalDisplaySegment.py
 
 
 class LogicalDisplaySegment(object):
@@ -16,6 +16,7 @@ class LogicalDisplaySegment(object):
         self._position_identifier = ()
         self._data_source = None
         self._display_string = None
+        return
 
     def disconnect(self):
         self._update_callback = None
@@ -23,6 +24,7 @@ class LogicalDisplaySegment(object):
         if self._data_source != None:
             self._data_source.set_update_callback(None)
             self._data_source = None
+        return
 
     def set_data_source(self, data_source):
         if self._data_source != None:
@@ -31,6 +33,7 @@ class LogicalDisplaySegment(object):
         if self._data_source != None:
             self._data_source.set_update_callback(self.update)
         self._display_string = self._get_display_string()
+        return
 
     def data_source(self):
         return self._data_source
@@ -57,6 +60,7 @@ class LogicalDisplaySegment(object):
             return self._data_source.adjust_string(width) + separator
         else:
             return ' ' * self._width
+        return
 
     def display_string(self):
         if self._display_string is None:

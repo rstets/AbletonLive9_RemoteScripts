@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/MomentaryModeObserver.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/MomentaryModeObserver.py
 import Defaults
 
 class MomentaryModeObserver(object):
@@ -9,6 +9,7 @@ class MomentaryModeObserver(object):
         self._controls = None
         self._mode_callback = None
         self._reset()
+        return
 
     def disconnect(self):
         self._reset()
@@ -25,6 +26,7 @@ class MomentaryModeObserver(object):
 
         self._base_mode = base_mode
         self._mode_callback = mode_callback
+        return
 
     def is_mode_momentary(self):
         return self._controls_changed or self._timer_count >= Defaults.MOMENTARY_DELAY_TICKS
@@ -35,6 +37,7 @@ class MomentaryModeObserver(object):
     def _control_changed(self, value):
         if self._mode_callback == None or self._mode_callback() == self._base_mode:
             self._controls_changed = True
+        return
 
     def _release_controls(self):
         if self._controls != None:
@@ -42,6 +45,7 @@ class MomentaryModeObserver(object):
                 control.remove_value_listener(self._control_changed)
 
             self._controls = None
+        return
 
     def _reset(self):
         self._base_mode = -1
@@ -49,3 +53,4 @@ class MomentaryModeObserver(object):
         self._mode_callback = None
         self._timer_count = 0
         self._release_controls()
+        return

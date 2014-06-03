@@ -1,4 +1,4 @@
-#Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Layer.py
+# Embedded file name: /Users/versonator/Jenkins/live/Projects/AppLive/Resources/MIDI Remote Scripts/_Framework/Layer.py
 """
 Module implementing a way to resource-based access to controls in an
 unified interface dynamic.
@@ -31,25 +31,31 @@ class ControlClient(object):
     def __eq__(self, other):
         return self.layer == getattr(other, 'layer', None) and self.layer_client == getattr(other, 'layer_client', None)
 
-    def set_control_element(self, control, grabbed):
+    def set_control_element(self, control_element, grabbed):
         layer = self.layer
         owner = self.layer_client
         raise owner or AssertionError
-        if not control in layer._control_to_names:
-            raise AssertionError, 'Control not in layer: %s' % (control,)
-            names = layer._control_to_names[control]
-            control = grabbed or None
+        if not control_element in layer._control_to_names:
+            raise AssertionError, 'Control not in layer: %s' % (control_element,)
+            names = layer._control_to_names[control_element]
+            control_element = grabbed or None
         for name in names:
             try:
                 handler = getattr(owner, 'set_' + name)
             except AttributeError:
-                if name[0] != '_':
-                    raise UnhandledControlError, 'Component %s has no handler for control %s' % (str(owner), name)
-                else:
-                    handler = nop
+                try:
+                    control = getattr(owner, name)
+                    handler = control.set_control_element
+                except AttributeError:
+                    if name[0] != '_':
+                        raise UnhandledControlError, 'Component %s has no handler for control_element %s' % (str(owner), name)
+                    else:
+                        handler = nop
 
-            handler(control)
-            layer._name_to_controls[name] = control
+            handler(control_element or None)
+            layer._name_to_controls[name] = control_element
+
+        return
 
 
 class CompoundLayer(CompoundResource):
@@ -108,6 +114,8 @@ class Layer(ExclusiveResource):
         self._control_to_names = dict()
         for name, control in controls.iteritems():
             self._control_to_names.setdefault(control, []).append(name)
+
+        return
 
     def __add__(self, other):
         return CompoundLayer(self, other)
